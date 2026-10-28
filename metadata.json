@@ -1,0 +1,6 @@
+{
+  "name": "Smart Concrete Mix & Cost Estimator",
+  "description": "Digital web tool for Civil Engineering quantity surveying, nominal concrete mix proportioning, and material cost estimation.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

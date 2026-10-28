@@ -1,0 +1,3870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Concrete Mix & Cost Estimator with Material Waste Analysis</title>
+  <meta name="description" content="Civil Engineering Academic Mini-Project: Digital Tool for Quantity Surveying, Nominal Concrete Mix Estimation & Material Waste Analysis.">
+  <meta property="og:title" content="Smart Concrete Mix & Cost Estimator with Material Waste Analysis">
+  <meta property="og:description" content="2nd Year Civil Engineering Mini-Project for Quantity Surveying, Concrete Estimation & Material Waste Analysis">
+  <meta property="og:type" content="website">
+
+  <style>
+    /* ==========================================================================
+       Civil Engineering Professional Design System & Theme
+       Deep Navy: #0f2744 / #1e3a8a | Blue: #2563eb | Construction Amber: #f59e0b
+       ========================================================================== */
+    :root {
+      --primary: #1e3a8a;          /* Engineering Deep Navy */
+      --primary-dark: #0f172a;     /* Blueprint Dark */
+      --primary-light: #2563eb;    /* Technical Blue */
+      --secondary: #3b82f6;
+      --accent: #f59e0b;           /* Construction Amber / Safety Gold */
+      --accent-dark: #d97706;
+      --accent-soft: #fffbeb;
+      --accent-border: #fde68a;
+      --success: #047857;          /* Quantity Surveying Green */
+      --success-light: #ecfdf5;
+      --success-border: #a7f3d0;
+      --danger: #dc2626;
+      --danger-light: #fef2f2;
+      --danger-border: #fecaca;
+      --warning: #b45309;
+      --warning-light: #fffbeb;
+      
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-subtle: #f1f5f9;
+      --border: #cbd5e1;
+      --border-subtle: #e2e8f0;
+      
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --text-light: #94a3b8;
+      
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --radius-xl: 18px;
+      
+      --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06);
+      --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
+      --shadow-lg: 0 10px 25px rgba(15, 39, 68, 0.12);
+      
+      --sidebar-width: 260px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--bg);
+      /* Dual-layer technical blueprint grid pattern */
+      background-image: 
+        linear-gradient(to right, rgba(30, 58, 138, 0.035) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(30, 58, 138, 0.035) 1px, transparent 1px),
+        linear-gradient(to right, rgba(30, 58, 138, 0.075) 1.5px, transparent 1.5px),
+        linear-gradient(to bottom, rgba(30, 58, 138, 0.075) 1.5px, transparent 1.5px);
+      background-size: 20px 20px, 20px 20px, 100px 100px, 100px 100px;
+      background-position: -1px -1px;
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    /* Layout Shell */
+    .app-layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* --------------------------------------------------------------------------
+       Sidebar Navigation
+       -------------------------------------------------------------------------- */
+    .sidebar {
+      width: var(--sidebar-width);
+      background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      border-right: 1px solid rgba(255, 255, 255, 0.1);
+      z-index: 50;
+      transition: transform 0.25s ease;
+    }
+
+    .sidebar-brand {
+      padding: 24px 20px 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .brand-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(245, 158, 11, 0.2);
+      border: 1px solid rgba(245, 158, 11, 0.5);
+      color: #fef3c7;
+      font-size: 0.68rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      padding: 3px 8px;
+      border-radius: 9999px;
+      margin-bottom: 8px;
+    }
+
+    .brand-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      line-height: 1.25;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-subtitle {
+      font-size: 0.74rem;
+      color: #94a3b8;
+      margin-top: 4px;
+    }
+
+    .sidebar-menu {
+      list-style: none;
+      padding: 18px 12px;
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      color: #cbd5e1;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      text-decoration: none;
+      border: 1px solid transparent;
+    }
+
+    .nav-item svg {
+      width: 18px;
+      height: 18px;
+      stroke-width: 2;
+      flex-shrink: 0;
+    }
+
+    .nav-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #ffffff;
+    }
+
+    .nav-item.active {
+      background: var(--primary-light);
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+    }
+
+    .sidebar-footer {
+      padding: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+      font-size: 0.74rem;
+      color: #94a3b8;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .sidebar-footer strong {
+      color: #e2e8f0;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    /* --------------------------------------------------------------------------
+       Main Content Container & Top Header Bar
+       -------------------------------------------------------------------------- */
+    .main-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .top-bar {
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .top-bar-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .mobile-menu-btn {
+      display: none;
+      background: var(--surface-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 7px;
+      cursor: pointer;
+      color: var(--text);
+    }
+
+    .mobile-menu-btn svg {
+      width: 20px;
+      height: 20px;
+      display: block;
+    }
+
+    .active-project-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      color: var(--primary);
+      padding: 5px 12px;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    .top-bar-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .content-area {
+      padding: 24px 28px 48px;
+      flex: 1;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    /* View Sections - Display toggle */
+    .view-section {
+      display: none;
+      animation: fadeIn 0.25s ease-out;
+    }
+
+    .view-section.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* --------------------------------------------------------------------------
+       Reusable Card Components & Badges
+       -------------------------------------------------------------------------- */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 22px;
+    }
+
+    .card-header-flex {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+      padding-bottom: 12px;
+      border-bottom: 1.5px solid var(--surface-subtle);
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .card-title {
+      font-size: 1.12rem;
+      font-weight: 800;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-title svg {
+      width: 20px;
+      height: 20px;
+      color: var(--accent);
+    }
+
+    /* Metrics Grid */
+    .metrics-grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .metric-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: all 0.18s ease;
+    }
+
+    .metric-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--primary-light);
+    }
+
+    .metric-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .metric-label {
+      font-size: 0.74rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+    }
+
+    .metric-icon-box {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--surface-subtle);
+      color: var(--primary);
+    }
+
+    .metric-icon-box svg {
+      width: 16px;
+      height: 16px;
+      stroke-width: 2.2;
+    }
+
+    .metric-value {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.2;
+    }
+
+    .metric-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+      font-weight: 500;
+    }
+
+    .metric-card.accent-green {
+      background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+      border: 1.5px solid #86efac;
+    }
+    .metric-card.accent-green .metric-value { color: #047857; font-size: 1.45rem; }
+
+    .metric-card.accent-blue {
+      background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+      border: 1.5px solid #bfdbfe;
+    }
+    .metric-card.accent-blue .metric-value { color: var(--primary); }
+
+    .metric-card.accent-amber {
+      background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+      border: 1.5px solid #fde68a;
+    }
+    .metric-card.accent-amber .metric-value { color: #b45309; }
+
+    .metric-card.accent-red {
+      background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+      border: 1.5px solid #fca5a5;
+    }
+    .metric-card.accent-red .metric-value { color: #b91c1c; }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 10px 18px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      border: none;
+      transition: all 0.18s ease;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .btn svg { width: 17px; height: 17px; stroke-width: 2.2; }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      color: #ffffff;
+      box-shadow: 0 3px 10px rgba(30, 58, 138, 0.25);
+    }
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #162e70 0%, #1d4ed8 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 5px 14px rgba(30, 58, 138, 0.35);
+    }
+
+    .btn-secondary {
+      background: var(--surface-subtle);
+      color: var(--text);
+      border: 1.5px solid var(--border);
+    }
+    .btn-secondary:hover {
+      background: #e2e8f0;
+      border-color: #94a3b8;
+    }
+
+    .btn-accent {
+      background: var(--accent);
+      color: #0f172a;
+      font-weight: 800;
+    }
+    .btn-accent:hover { background: var(--accent-dark); color: #ffffff; }
+
+    .btn-danger {
+      background: #fee2e2;
+      color: #b91c1c;
+      border: 1px solid #fca5a5;
+    }
+    .btn-danger:hover { background: #fecaca; }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 0.8rem;
+    }
+
+    /* Forms & Inputs */
+    .form-grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-label {
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .form-label .sub {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .input-box {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 12px;
+      width: 18px;
+      height: 18px;
+      color: var(--text-muted);
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 10px 12px 10px 38px;
+      font-size: 0.94rem;
+      font-weight: 600;
+      color: var(--text);
+      background: #ffffff;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-md);
+      transition: all 0.18s ease;
+      outline: none;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary-light);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
+    }
+
+    .input-suffix {
+      position: absolute;
+      right: 10px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      background: #f1f5f9;
+      border: 1px solid var(--border-subtle);
+      padding: 2px 7px;
+      border-radius: 4px;
+      pointer-events: none;
+    }
+
+    select.form-control {
+      appearance: none;
+      cursor: pointer;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 15px;
+      padding-right: 36px;
+    }
+
+    textarea.form-control {
+      padding-left: 12px;
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    .helper-text {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* Tables */
+    .table-responsive {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.88rem;
+    }
+
+    .data-table th {
+      background: #eff6ff;
+      color: var(--primary);
+      font-weight: 800;
+      text-transform: uppercase;
+      font-size: 0.74rem;
+      letter-spacing: 0.5px;
+      padding: 12px 16px;
+      border-bottom: 1.5px solid #bfdbfe;
+    }
+
+    .data-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-subtle);
+      color: var(--text);
+    }
+
+    .data-table tbody tr:hover { background: #f8fafc; }
+
+    .text-right { text-align: right; }
+    .text-center { text-align: center; }
+
+    /* Alert Banners */
+    .alert {
+      padding: 14px 18px;
+      border-radius: var(--radius-md);
+      font-size: 0.86rem;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 18px;
+      line-height: 1.5;
+    }
+
+    .alert svg { width: 20px; height: 20px; flex-shrink: 0; margin-top: 1px; }
+
+    .alert-amber {
+      background: var(--accent-soft);
+      border: 1px solid var(--accent-border);
+      border-left: 5px solid var(--accent);
+      color: #78350f;
+    }
+
+    .alert-red {
+      background: var(--danger-light);
+      border: 1px solid var(--danger-border);
+      border-left: 5px solid var(--danger);
+      color: #991b1b;
+      display: none;
+    }
+
+    /* Comparison Bar Charts (SVG Responsive) */
+    .chart-container {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      margin-top: 20px;
+    }
+
+    .chart-title {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Modal Dialogs */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(2px);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-box {
+      background: #ffffff;
+      border-radius: var(--radius-lg);
+      max-width: 650px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--border);
+      animation: modalPop 0.2s ease-out;
+    }
+
+    @keyframes modalPop {
+      from { transform: scale(0.96); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-header {
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--surface-subtle);
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    }
+
+    .modal-header h3 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .modal-body {
+      padding: 22px;
+    }
+
+    .modal-footer {
+      padding: 14px 22px;
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      background: var(--surface-subtle);
+      border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    }
+
+    .close-btn {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: var(--text-muted);
+      padding: 4px;
+    }
+    .close-btn:hover { color: var(--text); }
+
+    /* Step Formula Accordion / Audit Trail */
+    .step-box {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      margin-bottom: 10px;
+    }
+
+    .step-header {
+      font-weight: 700;
+      font-size: 0.88rem;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .step-code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.82rem;
+      background: #ffffff;
+      border: 1px solid var(--border-subtle);
+      padding: 6px 10px;
+      border-radius: var(--radius-sm);
+      margin-top: 6px;
+      color: #1e293b;
+    }
+
+    .step-note {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* Print / PDF Styling */
+    @media print {
+      body {
+        background: #ffffff !important;
+        background-image: none !important;
+        font-size: 10pt;
+        color: #000000 !important;
+        padding: 0 !important;
+      }
+
+      .sidebar, .top-bar, .mobile-menu-btn, .btn, .modal-backdrop, .no-print {
+        display: none !important;
+      }
+
+      .app-layout { display: block !important; }
+      .main-wrapper { display: block !important; }
+      .content-area { padding: 0 !important; max-width: 100% !important; }
+      .view-section { display: none !important; }
+      #view-reports { display: block !important; }
+
+      .card {
+        border: 1px solid #000000 !important;
+        box-shadow: none !important;
+        padding: 14px !important;
+      }
+
+      .data-table th {
+        background: #e2e8f0 !important;
+        color: #000000 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .print-signatures {
+        display: flex !important;
+        justify-content: space-between !important;
+        margin-top: 40px !important;
+        padding-top: 20px !important;
+        border-top: 1px solid #000000 !important;
+      }
+
+      .signature-col {
+        width: 220px;
+        text-align: center;
+        border-top: 1px solid #000000;
+        padding-top: 6px;
+        font-size: 9pt;
+      }
+    }
+
+    /* Toast Alert */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #0f172a;
+      color: #ffffff;
+      padding: 12px 20px;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      font-size: 0.88rem;
+      font-weight: 600;
+      display: none;
+      align-items: center;
+      gap: 10px;
+      z-index: 9999;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 900px) {
+      .sidebar {
+        position: fixed;
+        left: -100%;
+      }
+      .sidebar.open {
+        left: 0;
+      }
+      .mobile-menu-btn {
+        display: block;
+      }
+      .form-grid-3 { grid-template-columns: 1fr; }
+      .metrics-grid-4 { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 600px) {
+      .metrics-grid-4 { grid-template-columns: 1fr; }
+      .content-area { padding: 16px 12px 36px; }
+      .card { padding: 16px; }
+      .top-bar { padding: 10px 14px; }
+    }
+
+    /* --------------------------------------------------------------------------
+       Firebase Auth & User Profile Styles
+       -------------------------------------------------------------------------- */
+    #auth-splash-screen {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: #0f172a;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .splash-spinner {
+      width: 48px;
+      height: 48px;
+      border: 3.5px solid rgba(255, 255, 255, 0.15);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.85s linear infinite;
+      margin-bottom: 20px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    #auth-container {
+      min-height: 100vh;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .auth-card {
+      width: 100%;
+      max-width: 460px;
+      background: #ffffff;
+      border-radius: var(--radius-xl);
+      border: 1.5px solid var(--border);
+      box-shadow: 0 16px 36px rgba(15, 23, 42, 0.12);
+      overflow: hidden;
+      animation: fadeIn 0.25s ease-out;
+    }
+
+    .auth-header {
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+      color: #ffffff;
+      padding: 26px 24px 22px;
+      text-align: center;
+      position: relative;
+    }
+
+    .auth-header::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0; height: 4px;
+      background: linear-gradient(90deg, var(--accent) 0%, #3b82f6 100%);
+    }
+
+    .auth-tabs {
+      display: flex;
+      background: #f1f5f9;
+      border-bottom: 1.5px solid var(--border-subtle);
+    }
+
+    .auth-tab {
+      flex: 1;
+      text-align: center;
+      padding: 13px 16px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+      background: transparent;
+      border: none;
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s ease;
+    }
+
+    .auth-tab:hover {
+      color: var(--primary);
+      background: rgba(255, 255, 255, 0.5);
+    }
+
+    .auth-tab.active {
+      color: var(--primary);
+      background: #ffffff;
+      border-bottom-color: var(--primary);
+    }
+
+    .auth-body {
+      padding: 26px 24px;
+    }
+
+    .btn-google {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 12px 18px;
+      background: #ffffff;
+      color: #1f2937;
+      border: 1.5px solid #cbd5e1;
+      border-radius: var(--radius-md);
+      font-size: 0.94rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      transition: all 0.18s ease;
+    }
+
+    .btn-google:hover {
+      background: #f8fafc;
+      border-color: #94a3b8;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+      transform: translateY(-1px);
+    }
+
+    .auth-divider {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      margin: 20px 0;
+      color: var(--text-light);
+      font-size: 0.76rem;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+
+    .auth-divider::before,
+    .auth-divider::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .auth-divider::before { margin-right: 12px; }
+    .auth-divider::after { margin-left: 12px; }
+
+    .password-toggle-btn {
+      position: absolute;
+      right: 10px;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 4px 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .password-toggle-btn:hover { color: var(--text); }
+
+    .auth-error {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-left: 4px solid #ef4444;
+      color: #991b1b;
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.82rem;
+      margin-bottom: 16px;
+      display: none;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* User Profile Pill in Top Bar */
+    .user-pill-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 4px 10px 4px 6px;
+      background: #f8fafc;
+      border: 1.5px solid var(--border);
+      border-radius: 9999px;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      color: var(--text);
+    }
+
+    .user-pill-btn:hover {
+      background: #eff6ff;
+      border-color: var(--primary-light);
+    }
+
+    .user-avatar-circle {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary) 0%, #2563eb 100%);
+      color: #ffffff;
+      font-size: 0.76rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      flex-shrink: 0;
+      border: 1.5px solid #ffffff;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .user-avatar-circle img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .user-pill-info {
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+      line-height: 1.15;
+    }
+
+    .user-pill-name {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text);
+      max-width: 130px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .user-pill-status {
+      font-size: 0.68rem;
+      color: #047857;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #10b981;
+      display: inline-block;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .user-dropdown-menu {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      width: 260px;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.15);
+      z-index: 100;
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      animation: fadeIn 0.15s ease-out;
+    }
+
+    .user-dropdown-menu.show {
+      display: flex;
+    }
+
+    .user-dropdown-header {
+      padding: 14px 16px;
+      background: #f8fafc;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .user-dropdown-name {
+      font-weight: 800;
+      font-size: 0.92rem;
+      color: var(--text);
+      line-height: 1.2;
+    }
+
+    .user-dropdown-email {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .user-dropdown-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      color: #065f46;
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 9999px;
+      margin-top: 6px;
+    }
+
+    .user-dropdown-divider {
+      height: 1px;
+      background: var(--border-subtle);
+    }
+
+    .user-dropdown-item {
+      padding: 11px 16px;
+      font-size: 0.86rem;
+      font-weight: 600;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.15s ease;
+    }
+
+    .user-dropdown-item:hover {
+      background: #f1f5f9;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Initial Splash Loading Screen -->
+<div id="auth-splash-screen">
+  <div class="splash-spinner"></div>
+  <div style="font-size:1.15rem; font-weight:800; letter-spacing:0.5px; margin-bottom:6px;">
+    SMART CONCRETE ESTIMATOR
+  </div>
+  <div style="font-size:0.84rem; color:#94a3b8; max-width:320px;">
+    Authenticating Civil Engineering Session & Loading Cloud Records...
+  </div>
+</div>
+
+<!-- ========================================================================
+     AUTHENTICATION PORTAL VIEW (LOGIN & SIGN UP)
+     ======================================================================== -->
+<div id="auth-container">
+  <div class="auth-card">
+    <div class="auth-header">
+      <div class="brand-badge" style="background:rgba(245, 158, 11, 0.25); border-color:#f59e0b; margin-bottom:10px;">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        Civil Engineering Portal
+      </div>
+      <h2 style="font-size:1.35rem; font-weight:800; color:#ffffff; margin:0 0 4px;">Smart Concrete Estimator</h2>
+      <p style="font-size:0.8rem; color:#cbd5e1; margin:0;">
+        Nominal Mix Proportioning (IS 456) & Material Waste Analysis
+      </p>
+    </div>
+
+    <!-- Auth Tabs -->
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">
+        Sign In
+      </button>
+      <button class="auth-tab" id="tabSignup" onclick="switchAuthTab('signup')">
+        Create Account
+      </button>
+    </div>
+
+    <div class="auth-body">
+      <!-- Error Banner -->
+      <div class="auth-error" id="authErrorBanner">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+        <span id="authErrorMessage" style="flex:1;"></span>
+      </div>
+
+      <!-- Success / Info Notice -->
+      <div id="authInfoBanner" class="alert alert-amber" style="display:none; padding:10px 14px; margin-bottom:16px; font-size:0.82rem;">
+        <span id="authInfoMessage"></span>
+      </div>
+
+      <!-- Google Sign-In Button -->
+      <button type="button" class="btn-google" id="googleSignInBtn" onclick="handleGoogleSignIn()">
+        <svg width="18" height="18" viewBox="0 0 24 24">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+        </svg>
+        <span id="googleBtnText">Continue with Google</span>
+      </button>
+
+      <div class="auth-divider">
+        <span>or sign in with email</span>
+      </div>
+
+      <!-- FORM 1: LOGIN -->
+      <form id="loginForm" onsubmit="handleEmailLogin(event)">
+        <div class="form-group" style="margin-bottom:14px;">
+          <label class="form-label" for="loginEmail">Institutional / Personal Email</label>
+          <div class="input-box">
+            <div class="input-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            </div>
+            <input type="email" id="loginEmail" class="form-control" placeholder="engineer@example.com" required autocomplete="email">
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom:10px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <label class="form-label" for="loginPassword" style="margin:0;">Password</label>
+            <button type="button" onclick="openForgotPasswordModal()" style="background:none; border:none; color:var(--primary-light); font-size:0.78rem; font-weight:700; cursor:pointer;">
+              Forgot Password?
+            </button>
+          </div>
+          <div class="input-box">
+            <div class="input-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            </div>
+            <input type="password" id="loginPassword" class="form-control" placeholder="••••••••" required autocomplete="current-password" style="padding-right:40px;">
+            <button type="button" class="password-toggle-btn" onclick="togglePassword('loginPassword', 'loginPassToggleIcon')" aria-label="Toggle password visibility">
+              <svg id="loginPassToggleIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="loginSubmitBtn" style="width:100%; margin-top:16px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
+          <span id="loginSubmitText">Sign In to Dashboard</span>
+        </button>
+      </form>
+
+      <!-- FORM 2: SIGN UP -->
+      <form id="signupForm" onsubmit="handleEmailSignup(event)" style="display:none;">
+        <div class="form-group" style="margin-bottom:14px;">
+          <label class="form-label" for="signupName">Full Name / Engineer Designation</label>
+          <div class="input-box">
+            <div class="input-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            </div>
+            <input type="text" id="signupName" class="form-control" placeholder="e.g. Er. Priya Sharma" required autocomplete="name">
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom:14px;">
+          <label class="form-label" for="signupEmail">Institutional / Personal Email</label>
+          <div class="input-box">
+            <div class="input-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            </div>
+            <input type="email" id="signupEmail" class="form-control" placeholder="engineer@example.com" required autocomplete="email">
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom:14px;">
+          <label class="form-label" for="signupPassword">Password (Min. 6 characters)</label>
+          <div class="input-box">
+            <div class="input-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            </div>
+            <input type="password" id="signupPassword" class="form-control" placeholder="••••••••" required minlength="6" autocomplete="new-password" style="padding-right:40px;">
+            <button type="button" class="password-toggle-btn" onclick="togglePassword('signupPassword', 'signupPassToggleIcon')" aria-label="Toggle password visibility">
+              <svg id="signupPassToggleIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom:10px;">
+          <label class="form-label" for="signupConfirmPassword">Confirm Password</label>
+          <div class="input-box">
+            <div class="input-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            </div>
+            <input type="password" id="signupConfirmPassword" class="form-control" placeholder="••••••••" required minlength="6" autocomplete="new-password" style="padding-right:40px;">
+            <button type="button" class="password-toggle-btn" onclick="togglePassword('signupConfirmPassword', 'signupConfirmToggleIcon')" aria-label="Toggle confirm password visibility">
+              <svg id="signupConfirmToggleIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="signupSubmitBtn" style="width:100%; margin-top:16px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
+          <span id="signupSubmitText">Register New Account</span>
+        </button>
+      </form>
+
+      <!-- Guest / Offline Demo Mode Option -->
+      <div style="margin-top:16px;">
+        <div class="auth-divider" style="margin:14px 0 12px;">
+          <span>or for viva evaluation</span>
+        </div>
+        <button type="button" class="btn btn-secondary" onclick="continueAsGuest()" style="width:100%; display:flex; align-items:center; justify-content:center; gap:8px; font-weight:700;">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          Explore as Guest (Offline Demo Mode)
+        </button>
+        <div style="font-size:0.72rem; color:var(--text-muted); text-align:center; margin-top:6px;">
+          Instant access without login &bull; Full mix calculator, waste analysis & BoQ reports
+        </div>
+      </div>
+
+      <div style="margin-top:18px; text-align:center; font-size:0.75rem; color:var(--text-muted); border-top:1px solid var(--border-subtle); padding-top:14px;">
+        Civil Engineering 2nd Year Academic Project • Cloud Sync via Firestore
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="app-layout" id="appLayout" style="display:none;">
+  
+  <!-- ========================================================================
+       1. RESPONSIVE SIDEBAR NAVIGATION
+       ======================================================================== -->
+  <aside class="sidebar" id="appSidebar">
+    <div class="sidebar-brand">
+      <div class="brand-badge">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        Civil Engineering Mini Project
+      </div>
+      <div class="brand-title">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.2"><path d="M2 20h20M5 20V8l7-5 7 5v12M9 13h6M9 17h6"/></svg>
+        Smart Concrete Mix
+      </div>
+      <div class="brand-subtitle">& Material Waste Analysis Tool</div>
+    </div>
+
+    <ul class="sidebar-menu">
+      <li>
+        <a class="nav-item active" onclick="switchNav('dashboard')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+          Dashboard
+        </a>
+      </li>
+      <li>
+        <a class="nav-item" onclick="switchNav('new-project')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"></path></svg>
+          New Project
+        </a>
+      </li>
+      <li>
+        <a class="nav-item" onclick="switchNav('calculator')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="4" y="2" width="16" height="20" rx="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line><line x1="16" y1="14" x2="16" y2="18"></line><path d="M16 10h.01M12 10h.01M8 10h.01M12 14h.01M8 14h.01M12 18h.01M8 18h.01"></path></svg>
+          Mix Calculator
+        </a>
+      </li>
+      <li>
+        <a class="nav-item" onclick="switchNav('waste-analysis')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+          Cost & Waste Analysis
+        </a>
+      </li>
+      <li>
+        <a class="nav-item" onclick="switchNav('boq-reports')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          BoQ & Reports
+        </a>
+      </li>
+      <li>
+        <a class="nav-item" onclick="switchNav('settings')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          Material Rates & Settings
+        </a>
+      </li>
+    </ul>
+
+    <div class="sidebar-footer">
+      <strong>Dept. of Civil Engineering</strong>
+      2nd Year Academic Project • Viva Demo
+    </div>
+  </aside>
+
+  <!-- ========================================================================
+       Main Content Container
+       ======================================================================== -->
+  <div class="main-wrapper">
+    
+    <!-- Top Bar -->
+    <header class="top-bar">
+      <div class="top-bar-left">
+        <button class="mobile-menu-btn" onclick="toggleSidebar()" aria-label="Toggle navigation menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+        <div class="active-project-pill" id="activeProjectPill">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          <span id="activeProjectName">Default Demonstration Project</span>
+        </div>
+      </div>
+
+      <div class="top-bar-actions">
+        <button class="btn btn-secondary btn-sm" onclick="showFormulaAudit()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+          Formula Disclosures
+        </button>
+        <button class="btn btn-primary btn-sm" onclick="quickSaveCurrentProject()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+          Save Project
+        </button>
+
+        <!-- User Profile Dropdown Pill -->
+        <div class="user-profile-wrapper" id="userProfileWrapper" style="position:relative;">
+          <button class="user-pill-btn" id="userPillBtn" onclick="toggleUserDropdown()" aria-haspopup="true" aria-expanded="false" title="User Account Menu">
+            <div class="user-avatar-circle" id="userAvatarCircle">CE</div>
+            <div class="user-pill-info">
+              <span class="user-pill-name" id="userPillName">Engineer</span>
+              <span class="user-pill-status">
+                <span class="status-dot"></span> Cloud Sync
+              </span>
+            </div>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </button>
+
+          <div class="user-dropdown-menu" id="userDropdownMenu">
+            <div class="user-dropdown-header">
+              <div class="user-dropdown-name" id="dropdownUserName">Civil Engineer</div>
+              <div class="user-dropdown-email" id="dropdownUserEmail">engineer@example.com</div>
+              <div class="user-dropdown-badge">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#047857" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                Firestore Cloud Active
+              </div>
+            </div>
+            <div class="user-dropdown-divider"></div>
+            <a class="user-dropdown-item" onclick="switchNav('settings'); toggleUserDropdown(false);">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+              Material Rates & Settings
+            </a>
+            <div class="user-dropdown-divider"></div>
+            <a class="user-dropdown-item text-danger" onclick="handleLogout()" style="color:#dc2626;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+              Sign Out
+            </a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Views Area -->
+    <main class="content-area">
+
+      <!-- ====================================================================
+           VIEW 1: DASHBOARD
+           ==================================================================== -->
+      <section id="view-dashboard" class="view-section active">
+        <div class="card" style="background: linear-gradient(135deg, var(--primary) 0%, #1e3a8a 70%, #1d4ed8 100%); color:#ffffff; border:none;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:16px;">
+            <div>
+              <div class="brand-badge" style="background:rgba(245,158,11,0.25); border-color:#f59e0b;">
+                Executive Project Dashboard
+              </div>
+              <h2 style="font-size:1.6rem; font-weight:800; margin:4px 0 6px;">Smart Concrete Mix & Material Waste Analysis</h2>
+              <p style="color:#cbd5e1; font-size:0.92rem; max-width:680px;">
+                Comprehensive digital estimation software designed for Civil Engineering quantity surveying, nominal proportioning (IS 456), cost analysis, and site material waste optimization.
+              </p>
+            </div>
+            <div style="display:flex; gap:10px;">
+              <button class="btn btn-accent" onclick="switchNav('calculator')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="4" y="2" width="16" height="20" rx="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line></svg>
+                Open Calculator
+              </button>
+              <button class="btn btn-secondary" style="background:#ffffff; color:#0f172a;" onclick="switchNav('waste-analysis')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline></svg>
+                Waste Analysis
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dashboard Summary KPI Metrics -->
+        <div class="metrics-grid-4">
+          <div class="metric-card accent-blue">
+            <div class="metric-card-top">
+              <span class="metric-label">Active Batch Volume</span>
+              <div class="metric-icon-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+              </div>
+            </div>
+            <div class="metric-value" id="dashWetVol">10.00 m³</div>
+            <div class="metric-sub" id="dashDryVol">Dry Volume: 15.40 m³</div>
+          </div>
+
+          <div class="metric-card accent-green">
+            <div class="metric-card-top">
+              <span class="metric-label">Estimated Budget</span>
+              <div class="metric-icon-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+              </div>
+            </div>
+            <div class="metric-value" id="dashTotalCost">₹ 76,440</div>
+            <div class="metric-sub" id="dashUnitCost">Rate: ₹ 7,644 / m³</div>
+          </div>
+
+          <div class="metric-card accent-amber">
+            <div class="metric-card-top">
+              <span class="metric-label">Cement Requisite</span>
+              <div class="metric-icon-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+              </div>
+            </div>
+            <div class="metric-value" id="dashCementBags">84 Bags</div>
+            <div class="metric-sub" id="dashCementKg">4,200 kg total</div>
+          </div>
+
+          <div class="metric-card accent-red">
+            <div class="metric-card-top">
+              <span class="metric-label">Site Waste Impact</span>
+              <div class="metric-icon-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+              </div>
+            </div>
+            <div class="metric-value" id="dashWasteCost">₹ 2,226</div>
+            <div class="metric-sub" id="dashWastePercent">At 3% Site Wastage</div>
+          </div>
+        </div>
+
+        <!-- Local Storage Migration Banner -->
+        <div id="migrationBanner" class="alert alert-amber" style="display:none; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:18px;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+            <div>
+              <strong>Local Projects Detected:</strong>
+              <span id="migrationBannerText">Found estimation projects saved on this browser. Sync them into your Cloud Firestore account.</span>
+            </div>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <button class="btn btn-primary btn-sm" id="syncToCloudBtn" onclick="handleMigrateLocalProjects()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              Sync to Cloud
+            </button>
+            <button class="btn btn-secondary btn-sm" onclick="dismissMigrationBanner()">Dismiss</button>
+          </div>
+        </div>
+
+        <!-- Recent Saved Projects Table -->
+        <div class="card">
+          <div class="card-header-flex">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+              Saved Estimation Projects (Cloud Firestore Sync)
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="switchNav('new-project')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              Create New Project
+            </button>
+          </div>
+
+          <div class="table-responsive">
+            <table class="data-table" id="projectsTable">
+              <thead>
+                <tr>
+                  <th>Project Name</th>
+                  <th>Location</th>
+                  <th>Structure Type</th>
+                  <th>Grade</th>
+                  <th>Volume</th>
+                  <th class="text-right">Estimated Cost</th>
+                  <th class="text-right">Waste Cost</th>
+                  <th class="text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="projectsTableBody">
+                <!-- Populated dynamically via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Academic Disclaimer & Standards Overview -->
+        <div class="alert alert-amber">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          <div>
+            <strong>Civil Engineering Academic Disclosure & Scope:</strong>
+            This software applies empirical nominal volumetric mix proportions (IS 456:2000 Table 9 / Clause 9.3) using a dry void shrinkage factor of 1.54 for academic mini-project modeling. It does <em>not</em> claim compliance with IS 10262:2019 structural mix design (which requires target mean strength, specific gravities, water-reducing admixtures, moisture-corrections, and laboratory 28-day trial cubes).
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           VIEW 2: NEW / EDIT PROJECT
+           ==================================================================== -->
+      <section id="view-new-project" class="view-section">
+        <div class="card">
+          <div class="card-header-flex">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+              <span id="projectFormTitle">Create New Quantity Surveying Project</span>
+            </div>
+            <span class="sub" style="font-size:0.8rem; color:var(--text-muted);">Stored persistently in browser localStorage</span>
+          </div>
+
+          <form id="projectForm" onsubmit="handleSaveProject(event)">
+            <input type="hidden" id="editProjectId" value="">
+
+            <div class="form-grid-3">
+              <div class="form-group">
+                <label class="form-label" for="projName">
+                  <span>Project Name *</span>
+                  <span class="sub">Job title</span>
+                </label>
+                <div class="input-box">
+                  <div class="input-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+                  </div>
+                  <input type="text" id="projName" class="form-control" required placeholder="e.g. G+2 Residential Slab Casting">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="projLocation">
+                  <span>Project Location *</span>
+                  <span class="sub">Site address</span>
+                </label>
+                <div class="input-box">
+                  <div class="input-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                  </div>
+                  <input type="text" id="projLocation" class="form-control" required placeholder="e.g. Plot 42, Civil Station Road">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="projDate">
+                  <span>Estimation Date *</span>
+                  <span class="sub">Record timestamp</span>
+                </label>
+                <div class="input-box">
+                  <div class="input-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line></svg>
+                  </div>
+                  <input type="date" id="projDate" class="form-control" required>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-grid-3" style="margin-top:16px;">
+              <div class="form-group">
+                <label class="form-label" for="projStructure">
+                  <span>Structure Type *</span>
+                  <span class="sub">Structural component</span>
+                </label>
+                <div class="input-box">
+                  <div class="input-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"></rect></svg>
+                  </div>
+                  <select id="projStructure" class="form-control">
+                    <option value="Roof Slab & Beams">Roof Slab & Beams</option>
+                    <option value="Isolated Column Footings">Isolated Column Footings</option>
+                    <option value="Combined / Raft Footing">Combined / Raft Footing</option>
+                    <option value="RCC Columns & Pedestals">RCC Columns & Pedestals</option>
+                    <option value="Plinth Beams & DPC">Plinth Beams & DPC</option>
+                    <option value="Retaining Wall">Retaining Wall</option>
+                    <option value="PCC Bedding Foundation">PCC Bedding Foundation</option>
+                    <option value="Staircase Waist Slab">Staircase Waist Slab</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="projGrade">
+                  <span>Concrete Grade *</span>
+                  <span class="sub">Nominal ratio</span>
+                </label>
+                <div class="input-box">
+                  <div class="input-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon></svg>
+                  </div>
+                  <select id="projGrade" class="form-control">
+                    <option value="M10">M10 — 1 : 3 : 6 (PCC / Lean Concrete)</option>
+                    <option value="M15">M15 — 1 : 2 : 4 (Plain Mass Concrete)</option>
+                    <option value="M20" selected>M20 — 1 : 1.5 : 3 (Standard RCC Structure)</option>
+                    <option value="M25">M25 — 1 : 1 : 2 (Heavy Structural RCC)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="projVolume">
+                  <span>Wet Concrete Volume (m³) *</span>
+                  <span class="sub">Net compacted</span>
+                </label>
+                <div class="input-box">
+                  <div class="input-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+                  </div>
+                  <input type="number" id="projVolume" class="form-control" min="0.01" step="0.1" value="10" required>
+                  <span class="input-suffix">m³</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group" style="margin-top:16px;">
+              <label class="form-label" for="projNotes">
+                <span>Site Notes & Structural Specifications</span>
+                <span class="sub">Optional remarks</span>
+              </label>
+              <textarea id="projNotes" class="form-control" placeholder="Enter reinforcement cover, slump requirement, exposure condition, or contractor notes..."></textarea>
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:22px;">
+              <button type="button" class="btn btn-secondary" onclick="switchNav('dashboard')">Cancel</button>
+              <button type="submit" class="btn btn-primary">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path></svg>
+                Save & Load into Calculator
+              </button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           VIEW 3: MIX CALCULATOR
+           ==================================================================== -->
+      <section id="view-calculator" class="view-section">
+        
+        <!-- Structural Presets -->
+        <div class="card" style="padding:14px 18px; margin-bottom:18px;">
+          <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+            <strong style="font-size:0.8rem; color:var(--primary); text-transform:uppercase;">Quick Presets:</strong>
+            <button class="btn btn-secondary btn-sm" onclick="applyQuickPreset('slab')">Roof Slab (10 m³ • M20)</button>
+            <button class="btn btn-secondary btn-sm" onclick="applyQuickPreset('footing')">Footing (5 m³ • M20)</button>
+            <button class="btn btn-secondary btn-sm" onclick="applyQuickPreset('pcc')">PCC Bed (4 m³ • M10)</button>
+            <button class="btn btn-secondary btn-sm" onclick="applyQuickPreset('heavy')">Heavy RCC (25 m³ • M25)</button>
+          </div>
+        </div>
+
+        <!-- Calculator Form Card -->
+        <div class="card">
+          <div class="card-header-flex">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="4" y="2" width="16" height="20" rx="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line></svg>
+              Concrete Mix & Quantity Parameters
+            </div>
+            <div style="display:flex; gap:8px;">
+              <button class="btn btn-secondary btn-sm" onclick="resetCalculatorDefaults()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path></svg>
+                Reset Defaults
+              </button>
+              <button class="btn btn-secondary btn-sm" onclick="showFormulaAudit()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line></svg>
+                View Step Calculations
+              </button>
+            </div>
+          </div>
+
+          <div class="form-grid-3">
+            <!-- Grade -->
+            <div class="form-group">
+              <label class="form-label" for="calcGrade">
+                <span>Concrete Grade (IS 456)</span>
+                <span class="sub" id="gradeRatioLabel">1 : 1.5 : 3</span>
+              </label>
+              <div class="input-box">
+                <div class="input-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon></svg></div>
+                <select id="calcGrade" class="form-control" onchange="runLiveCalculation()">
+                  <option value="M10">M10 — 1 : 3 : 6 (PCC Bedding)</option>
+                  <option value="M15">M15 — 1 : 2 : 4 (Plain Mass Concrete)</option>
+                  <option value="M20" selected>M20 — 1 : 1.5 : 3 (Standard RCC Structure)</option>
+                  <option value="M25">M25 — 1 : 1 : 2 (Heavy Structural RCC)</option>
+                </select>
+              </div>
+              <div class="helper-text" id="gradeHelperText">28-day Characteristic Strength: 20 N/mm²</div>
+            </div>
+
+            <!-- Volume -->
+            <div class="form-group">
+              <label class="form-label" for="calcVolume">
+                <span>Wet Concrete Volume</span>
+                <span class="sub">Compacted</span>
+              </label>
+              <div class="input-box">
+                <div class="input-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg></div>
+                <input type="number" id="calcVolume" class="form-control" min="0.01" step="0.1" value="10" oninput="runLiveCalculation()">
+                <span class="input-suffix">m³</span>
+              </div>
+              <div class="helper-text" id="calcVolumeCuFt">≈ 353.15 cubic feet (cu ft)</div>
+            </div>
+
+            <!-- Site Wastage -->
+            <div class="form-group">
+              <label class="form-label" for="calcWastage">
+                <span>Site Wastage Allowance</span>
+                <span class="sub" id="calcWastageBadge">3% normal site</span>
+              </label>
+              <div class="input-box">
+                <div class="input-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg></div>
+                <input type="number" id="calcWastage" class="form-control" min="0" max="25" step="0.5" value="3" oninput="runLiveCalculation()">
+                <span class="input-suffix">%</span>
+              </div>
+              <div class="helper-text">Covers transit, spillage, and formwork void leakage</div>
+            </div>
+          </div>
+
+          <!-- Material Market Rates -->
+          <div class="form-grid-3" style="margin-top:16px;">
+            <div class="form-group">
+              <label class="form-label" for="calcCementRate">
+                <span>Cement Rate (₹ / 50 kg bag)</span>
+                <span class="sub">OPC / PPC</span>
+              </label>
+              <div class="input-box">
+                <div class="input-icon" style="font-weight:700;">₹</div>
+                <input type="number" id="calcCementRate" class="form-control" min="0" step="1" value="420" oninput="runLiveCalculation()">
+                <span class="input-suffix">/ bag</span>
+              </div>
+              <div class="helper-text">1 Bag = 50 kg = 0.0347 m³ volume</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="calcSandRate">
+                <span>Sand Rate (₹ / m³)</span>
+                <span class="sub">M-Sand / River</span>
+              </label>
+              <div class="input-box">
+                <div class="input-icon" style="font-weight:700;">₹</div>
+                <input type="number" id="calcSandRate" class="form-control" min="0" step="1" value="1600" oninput="runLiveCalculation()">
+                <span class="input-suffix">/ m³</span>
+              </div>
+              <div class="helper-text">Approx ₹ 4,530 / brass (1 brass = 2.8317 m³)</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="calcAggRate">
+                <span>Coarse Aggregate Rate (₹ / m³)</span>
+                <span class="sub">20mm & 10mm</span>
+              </label>
+              <div class="input-box">
+                <div class="input-icon" style="font-weight:700;">₹</div>
+                <input type="number" id="calcAggRate" class="form-control" min="0" step="1" value="1400" oninput="runLiveCalculation()">
+                <span class="input-suffix">/ m³</span>
+              </div>
+              <div class="helper-text">Approx ₹ 3,964 / brass (1 brass = 2.8317 m³)</div>
+            </div>
+          </div>
+
+          <div id="calcValidationAlert" class="alert alert-red" style="margin-top:16px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line></svg>
+            <span id="calcValidationMsg">Please enter valid positive values.</span>
+          </div>
+        </div>
+
+        <!-- Calculated Output Cards Dashboard -->
+        <div class="metrics-grid-4">
+          <div class="metric-card accent-blue">
+            <div class="metric-card-top">
+              <span class="metric-label">Dry Volume Required</span>
+              <div class="metric-icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg></div>
+            </div>
+            <div class="metric-value" id="resDryVol">15.40 m³</div>
+            <div class="metric-sub">Dry factor 1.54 × Wet Volume</div>
+          </div>
+
+          <div class="metric-card accent-amber">
+            <div class="metric-card-top">
+              <span class="metric-label">Cement Quantity</span>
+              <div class="metric-icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg></div>
+            </div>
+            <div class="metric-value" id="resCementBags">84 Bags</div>
+            <div class="metric-sub" id="resCementDetails">4,200 kg (2.88 m³)</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-card-top">
+              <span class="metric-label">Sand (Fine Aggregate)</span>
+              <div class="metric-icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg></div>
+            </div>
+            <div class="metric-value" id="resSandVol">4.33 m³</div>
+            <div class="metric-sub" id="resSandDetails">152.8 cu ft • 1.53 brass</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-card-top">
+              <span class="metric-label">Coarse Aggregate</span>
+              <div class="metric-icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon></svg></div>
+            </div>
+            <div class="metric-value" id="resAggVol">8.65 m³</div>
+            <div class="metric-sub" id="resAggDetails">305.5 cu ft • 3.05 brass</div>
+          </div>
+        </div>
+
+        <div class="metrics-grid-4">
+          <div class="metric-card">
+            <div class="metric-card-top">
+              <span class="metric-label">Water Requirement</span>
+              <div class="metric-icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg></div>
+            </div>
+            <div class="metric-value" id="resWaterL">2,100 L</div>
+            <div class="metric-sub">W/C Ratio = 0.50 (Potable)</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-card-top">
+              <span class="metric-label">Unit Rate per m³</span>
+              <div class="metric-icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg></div>
+            </div>
+            <div class="metric-value" id="resUnitRate">₹ 7,644 / m³</div>
+            <div class="metric-sub">Materials only at site</div>
+          </div>
+
+          <div class="metric-card accent-green" style="grid-column: span 2;">
+            <div class="metric-card-top">
+              <span class="metric-label" style="color:#047857;">Total Estimated Material Cost</span>
+              <div class="metric-icon-box" style="background:#a7f3d0; color:#047857;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><polyline points="20 6 9 17 4 12"></polyline></svg>
+              </div>
+            </div>
+            <div class="metric-value" id="resTotalCost">₹ 76,440</div>
+            <div class="metric-sub" id="resCostBreakdownLabel" style="color:#047857;">
+              Cement: ₹ 35,280 | Sand: ₹ 6,928 | Aggregate: ₹ 12,110
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick navigation action buttons -->
+        <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:10px;">
+          <button class="btn btn-secondary" onclick="switchNav('waste-analysis')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline></svg>
+            Perform Material Waste Analysis
+          </button>
+          <button class="btn btn-primary" onclick="switchNav('boq-reports')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path></svg>
+            Generate BoQ & Formal Report
+          </button>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           VIEW 4: MATERIAL WASTAGE ANALYSIS
+           ==================================================================== -->
+      <section id="view-waste-analysis" class="view-section">
+        
+        <div class="card">
+          <div class="card-header-flex">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+              Material Waste Analysis & Financial Impact Schedule
+            </div>
+            <span class="sub" style="font-size:0.8rem; color:var(--text-muted);">
+              Current configured allowance: <strong id="wasteDisplayBadge">3%</strong>
+            </span>
+          </div>
+
+          <p style="font-size:0.88rem; color:#475569; margin-bottom:18px;">
+            In construction engineering, volumetric loss occurs during batching, transit, spilling at forms, and residual coating in mixers. This module decomposes quantities into <b>Base Requirement (0% loss)</b> versus <b>Additional Site Waste Allowance</b> to quantify the precise financial cost of waste.
+          </p>
+
+          <!-- Waste Decomposition Table -->
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Material Component</th>
+                  <th>Base Quantity (0% Waste)</th>
+                  <th>Waste Allowance</th>
+                  <th>Final Quantity Required</th>
+                  <th class="text-right">Unit Rate</th>
+                  <th class="text-right">Waste Cost Impact</th>
+                  <th class="text-right">Total Material Cost</th>
+                </tr>
+              </thead>
+              <tbody id="wasteDecompBody">
+                <!-- Dynamically generated rows -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Wastage Scenario Comparison Card -->
+        <div class="card">
+          <div class="card-header-flex">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+              Comparative Site Wastage Scenarios Matrix
+            </div>
+            <span class="sub" style="font-size:0.8rem; color:var(--text-muted);">Simulation model based on current volume</span>
+          </div>
+
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Scenario Type</th>
+                  <th>Wastage %</th>
+                  <th>Total Cement</th>
+                  <th>Sand Vol</th>
+                  <th>Aggregate Vol</th>
+                  <th class="text-right">Total Cost</th>
+                  <th class="text-right">Extra Cost Incurred</th>
+                </tr>
+              </thead>
+              <tbody id="scenariosTableBody">
+                <!-- Dynamically generated scenario rows -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Dynamic SVG Comparative Cost Chart -->
+          <div class="chart-container">
+            <div class="chart-title">
+              <span>Financial Cost by Wastage Scenario (₹ Indian Rupees)</span>
+              <span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">Academic Scenario Simulation</span>
+            </div>
+            <div id="svgChartWrapper" style="width:100%; overflow-x:auto;">
+              <!-- SVG chart inserted via JS -->
+            </div>
+          </div>
+
+          <!-- Engineering Disclaimer -->
+          <div class="alert alert-amber" style="margin-top:20px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line></svg>
+            <div>
+              <strong>Engineering Principle & Methodological Limitation:</strong>
+              Scenario comparisons model hypothetical handling variances for academic quantity surveying and budget sensitivity estimation; <em>they do not prove actual field material savings without site audits, calibrated batch plants, and certified weigh-batching records.</em>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           VIEW 5: BOQ & REPORTS
+           ==================================================================== -->
+      <section id="view-reports" class="view-section">
+        
+        <!-- Controls bar -->
+        <div class="card no-print" style="padding:14px 20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+          <div>
+            <strong style="color:var(--primary); font-size:0.95rem;">Civil Engineering Bill of Quantities (BoQ) & Project Report</strong>
+            <div style="font-size:0.76rem; color:var(--text-muted);">Format optimized for college project viva, external review, and PDF printing</div>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <button class="btn btn-secondary btn-sm" onclick="copyReportText()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              Copy Text Summary
+            </button>
+            <button class="btn btn-primary btn-sm" onclick="window.print()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+              Print / Save as PDF
+            </button>
+          </div>
+        </div>
+
+        <!-- Formal Report Sheet (Printable Document) -->
+        <div class="card" id="printableReportCard">
+          
+          <!-- Document Header -->
+          <div style="border-bottom:2px solid #0f2744; padding-bottom:16px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:14px;">
+            <div>
+              <div style="font-size:0.74rem; font-weight:800; text-transform:uppercase; color:#d97706; letter-spacing:0.8px;">
+                DEPARTMENT OF CIVIL ENGINEERING • ACADEMIC MINI-PROJECT REPORT
+              </div>
+              <h1 style="font-size:1.45rem; font-weight:800; color:#0f2744; margin:4px 0 2px;">
+                PRELIMINARY CONCRETE BILL OF QUANTITIES & MATERIAL WASTE ESTIMATE
+              </h1>
+              <div style="font-size:0.82rem; color:#64748b;">
+                Subject: Estimation, Costing & Valuation • 2nd Year Civil Engineering
+              </div>
+            </div>
+            <div style="text-align:right; font-size:0.78rem; color:#475569;">
+              <div>Report Reference: <strong id="repRef">CE-EST-2026-001</strong></div>
+              <div>Generated: <strong id="repTimestamp">—</strong></div>
+              <div>Standard: <strong>IS 456:2000 Table 9 (Nominal)</strong></div>
+            </div>
+          </div>
+
+          <!-- Project Metadata Schedule -->
+          <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; padding:14px 18px; margin-bottom:20px; display:grid; grid-template-columns:repeat(3, 1fr); gap:14px; font-size:0.84rem;">
+            <div>
+              <span style="color:#64748b; display:block; font-size:0.74rem; text-transform:uppercase;">Project Name</span>
+              <strong id="repProjName">Apex Residential Slab</strong>
+            </div>
+            <div>
+              <span style="color:#64748b; display:block; font-size:0.74rem; text-transform:uppercase;">Site Location</span>
+              <strong id="repProjLocation">Site Location Bangalore</strong>
+            </div>
+            <div>
+              <span style="color:#64748b; display:block; font-size:0.74rem; text-transform:uppercase;">Structure Element</span>
+              <strong id="repProjStructure">Roof Slab & Beams</strong>
+            </div>
+            <div>
+              <span style="color:#64748b; display:block; font-size:0.74rem; text-transform:uppercase;">Specified Grade</span>
+              <strong id="repProjGrade">M20 (1 : 1.5 : 3)</strong>
+            </div>
+            <div>
+              <span style="color:#64748b; display:block; font-size:0.74rem; text-transform:uppercase;">In-Situ Wet Volume</span>
+              <strong id="repProjVolume">10.00 m³</strong>
+            </div>
+            <div>
+              <span style="color:#64748b; display:block; font-size:0.74rem; text-transform:uppercase;">Dry Mortar Volume</span>
+              <strong id="repProjDryVolume">15.40 m³ (× 1.54 Factor)</strong>
+            </div>
+          </div>
+
+          <!-- Formal BOQ Table -->
+          <h3 style="font-size:0.95rem; font-weight:800; color:var(--primary); margin-bottom:10px;">
+            Itemized Material Schedule & Financial Breakdown
+          </h3>
+          <div class="table-responsive" style="margin-bottom:20px;">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width:5%;">Item</th>
+                  <th style="width:35%;">Material Description & Specifications</th>
+                  <th style="width:18%;">Quantity Required</th>
+                  <th style="width:12%;">Unit</th>
+                  <th style="width:15%;" class="text-right">Unit Rate (₹)</th>
+                  <th style="width:15%;" class="text-right">Amount (₹)</th>
+                </tr>
+              </thead>
+              <tbody id="repBoqBody">
+                <!-- Dynamically generated rows -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Wastage Impact Breakdown Summary -->
+          <div style="background:#f1f5f9; border:1px solid #cbd5e1; border-radius:8px; padding:14px 18px; margin-bottom:20px;">
+            <div style="font-size:0.86rem; font-weight:800; color:var(--primary); margin-bottom:6px;">
+              Material Waste Analysis Summary
+            </div>
+            <div style="font-size:0.82rem; color:#334155; line-height:1.6;" id="repWasteSummary">
+              Includes 3% handling and transit wastage factor. The additional cost attributable purely to material waste on this batch is estimated at ₹ 2,226 (approx 2.91% of total material procurement).
+            </div>
+          </div>
+
+          <!-- Engineering Assumptions & Limitations -->
+          <div style="border-top:1px solid #cbd5e1; padding-top:14px; margin-top:20px; font-size:0.75rem; color:#64748b; line-height:1.55;">
+            <strong>Quantity Surveying Assumptions & Engineering Limitations:</strong><br>
+            1. <strong>Dry Volume Conversion:</strong> Concrete wet volume is multiplied by empirical factor 1.54 to account for shrinkage and void filling of dry loose ingredients upon water addition.<br>
+            2. <strong>Cement Bulk Density:</strong> Standard Ordinary Portland Cement density is taken as 1440 kg/m³ with 50 kg per commercial bag (nominal volume = 0.0347 m³/bag). Bags rounded UP to next integer.<br>
+            3. <strong>Water-Cement Ratio:</strong> Estimated at nominal 0.50 by mass for potable mixing water conforming to IS 456 Clause 5.4.<br>
+            4. <strong>Scope of Validity:</strong> This document represents a preliminary student academic estimate. For major structural concrete, an engineered mix design must be carried out in compliance with IS 10262:2019 trial procedures.
+          </div>
+
+          <!-- Signatures Block -->
+          <div class="print-signatures" style="margin-top:36px; padding-top:20px; border-top:1px solid #000000; display:flex; justify-content:space-between;">
+            <div class="signature-col" style="width:220px; text-align:center; border-top:1px solid #000; padding-top:6px; font-size:8.5pt;">
+              <strong>Student / Estimator</strong><br>
+              2nd Year Civil Engineering
+            </div>
+            <div class="signature-col" style="width:220px; text-align:center; border-top:1px solid #000; padding-top:6px; font-size:8.5pt;">
+              <strong>Project Guide / Faculty Advisor</strong><br>
+              Department of Civil Engineering
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           VIEW 6: MATERIAL RATES & SETTINGS
+           ==================================================================== -->
+      <section id="view-settings" class="view-section">
+        <div class="card">
+          <div class="card-header-flex">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+              Material Unit Rates & Engineering Settings
+            </div>
+            <span class="sub" style="font-size:0.8rem; color:var(--text-muted);">Configure default regional constants</span>
+          </div>
+
+          <form id="settingsForm" onsubmit="handleSaveSettings(event)">
+            <h4 style="font-size:0.9rem; color:var(--primary); margin-bottom:12px;">Default Regional Material Unit Rates</h4>
+            <div class="form-grid-3">
+              <div class="form-group">
+                <label class="form-label" for="setDefCementRate">Default Cement Rate (₹ / 50kg bag)</label>
+                <input type="number" id="setDefCementRate" class="form-control" min="0" step="1" value="420" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="setDefSandRate">Default Sand Rate (₹ / m³)</label>
+                <input type="number" id="setDefSandRate" class="form-control" min="0" step="1" value="1600" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="setDefAggRate">Default Aggregate Rate (₹ / m³)</label>
+                <input type="number" id="setDefAggRate" class="form-control" min="0" step="1" value="1400" required>
+              </div>
+            </div>
+
+            <h4 style="font-size:0.9rem; color:var(--primary); margin:20px 0 12px;">Technical Engineering Constants</h4>
+            <div class="form-grid-3">
+              <div class="form-group">
+                <label class="form-label" for="setDryFactor">
+                  <span>Dry Volume Factor</span>
+                  <span class="sub">Standard 1.54</span>
+                </label>
+                <input type="number" id="setDryFactor" class="form-control" min="1.40" max="1.65" step="0.01" value="1.54" required>
+                <div class="helper-text">IS empirical void shrinkage multiplier (1.52 to 1.55)</div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="setDefWastage">
+                  <span>Default Site Wastage %</span>
+                  <span class="sub">Normal 3%</span>
+                </label>
+                <input type="number" id="setDefWastage" class="form-control" min="0" max="25" step="0.5" value="3" required>
+                <div class="helper-text">Applied on new estimates by default</div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="setWaterRatio">
+                  <span>Nominal Water-Cement Ratio</span>
+                  <span class="sub">Standard 0.50</span>
+                </label>
+                <input type="number" id="setWaterRatio" class="form-control" min="0.40" max="0.65" step="0.01" value="0.50" required>
+                <div class="helper-text">Litres of water per kg of cement</div>
+              </div>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:24px; padding-top:16px; border-top:1px solid var(--border-subtle); flex-wrap:wrap; gap:12px;">
+              <button type="button" class="btn btn-danger btn-sm" onclick="confirmResetAllData()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                Clear Database & Reset All
+              </button>
+
+              <div style="display:flex; gap:10px;">
+                <button type="button" class="btn btn-secondary" onclick="restoreDefaultSettings()">Restore Defaults</button>
+                <button type="submit" class="btn btn-primary">Save Settings</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- ========================================================================
+     MODALS & DIALOGS
+     ======================================================================== -->
+
+<!-- Formula Disclosure Audit Modal -->
+<div class="modal-backdrop" id="formulaModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        Quantity Surveying Calculation Disclosure
+      </h3>
+      <button class="close-btn" onclick="closeFormulaAudit()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:0.86rem; color:#475569; margin-bottom:14px;">
+        This audit trail reveals every intermediate mathematical formulation, conversion factor, and rounding rule used in this estimation project:
+      </p>
+
+      <div class="step-box">
+        <div class="step-header">Step 1: Wet to Dry Concrete Volume Factor</div>
+        <div class="step-code">Dry Volume (m³) = Wet Compacted Volume (m³) × 1.54</div>
+        <div class="step-note">Accounts for 54% loss due to dry aggregate voids being filled by water and paste during compaction.</div>
+      </div>
+
+      <div class="step-box">
+        <div class="step-header">Step 2: Nominal Volumetric Proportion Parts</div>
+        <div class="step-code">Sum of Parts (Σ) = c + s + a</div>
+        <div class="step-note">For M20 (1 : 1.5 : 3): Σ = 1 + 1.5 + 3 = 5.5 parts total.</div>
+      </div>
+
+      <div class="step-box">
+        <div class="step-header">Step 3: Wastage Factor Multiplier</div>
+        <div class="step-code">Wastage Multiplier = 1 + (Wastage% / 100)</div>
+        <div class="step-note">Applied directly to constituent ingredient volumes before packaging calculations.</div>
+      </div>
+
+      <div class="step-box">
+        <div class="step-header">Step 4: Cement Commercial Bag Rounding Rule</div>
+        <div class="step-code">Cement Bags = Math.ceil( Cement Volume (m³) / 0.0347 )</div>
+        <div class="step-note">Standard 50 kg OPC bag = 0.0347 m³ (Density = 1440 kg/m³). In commercial civil practice, partial bags cannot be ordered, so volume is rounded UP to next integer bag.</div>
+      </div>
+
+      <div class="step-box">
+        <div class="step-header">Step 5: Water Requirement & Water-Cement Ratio</div>
+        <div class="step-code">Water (Litres) = Total Cement Mass (kg) × 0.50 (w/c ratio)</div>
+        <div class="step-note">Assuming standard nominal mix ratio of 0.50 for ordinary workable concrete.</div>
+      </div>
+
+      <div class="step-box">
+        <div class="step-header">Step 6: Imperial & Secondary Site Units</div>
+        <div class="step-code">1 m³ = 35.3147 cu ft | 1 Brass = 100 cu ft = 2.8317 m³ | 1 m³ Sand ≈ 1.6 T</div>
+        <div class="step-note">Provided to assist field site supervisors and procurement officers in regional Indian markets.</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary btn-sm" onclick="closeFormulaAudit()">Acknowledge & Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal-backdrop" id="deleteModal">
+  <div class="modal-box" style="max-width:440px;">
+    <div class="modal-header">
+      <h3 style="color:#b91c1c;">Confirm Project Deletion</h3>
+      <button class="close-btn" onclick="closeDeleteModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:0.9rem; color:#334155;">
+        Are you sure you want to permanently delete the project: <br>
+        <strong id="deleteProjectName" style="color:#0f172a;"></strong>?
+      </p>
+      <p style="font-size:0.78rem; color:#dc2626; margin-top:8px;">
+        This action cannot be undone and will delete the record from your Cloud Firestore database.
+      </p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary btn-sm" onclick="closeDeleteModal()">Cancel</button>
+      <button class="btn btn-danger btn-sm" id="confirmDeleteBtn">Delete Project</button>
+    </div>
+  </div>
+</div>
+
+<!-- Forgot Password Modal -->
+<div class="modal-backdrop" id="forgotPasswordModal">
+  <div class="modal-box" style="max-width:440px;">
+    <div class="modal-header">
+      <h3>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        Reset Account Password
+      </h3>
+      <button class="close-btn" onclick="closeForgotPasswordModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:0.86rem; color:var(--text-muted); margin-bottom:14px;">
+        Enter your registered email address below. We'll send a secure password reset link to your inbox.
+      </p>
+      <div class="form-group">
+        <label class="form-label" for="forgotEmail">Email Address</label>
+        <div class="input-box">
+          <div class="input-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+          </div>
+          <input type="email" id="forgotEmail" class="form-control" placeholder="engineer@example.com" required>
+        </div>
+      </div>
+      <div id="forgotModalMsg" style="margin-top:12px; font-size:0.84rem; display:none;"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary btn-sm" onclick="closeForgotPasswordModal()">Cancel</button>
+      <button class="btn btn-primary btn-sm" id="sendResetBtn" onclick="handleSendPasswordReset()">
+        Send Reset Link
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Popup Notification -->
+<div id="appToast" class="toast">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+  <span id="toastMessage">Action performed successfully</span>
+</div>
+
+<!-- ==========================================================================
+     CORE JAVASCRIPT: APPLICATION ENGINE & STATE MANAGEMENT
+     ========================================================================== -->
+<script type="module">
+import {
+  auth,
+  db,
+  loginWithEmail,
+  signupWithEmail,
+  loginWithGoogle,
+  resetPassword,
+  logoutUser,
+  subscribeToUserProjects,
+  saveUserProjectToCloud,
+  deleteUserProjectFromCloud,
+  migrateLocalProjectsToFirestore
+} from '/src/firebase.ts';
+import { onAuthStateChanged } from 'firebase/auth';
+
+let currentUser = null;
+let unsubscribeProjects = null;
+
+/**
+ * Civil Engineering Concrete Nominal Mix Ratios (IS 456:2000)
+ */
+const NOMINAL_MIX_RATIOS = {
+  M10: { c: 1, s: 3,   a: 6, label: "1 : 3 : 6",   fck: 10, usage: "PCC Foundation Bedding" },
+  M15: { c: 1, s: 2,   a: 4, label: "1 : 2 : 4",   fck: 15, usage: "Plain Mass Concrete" },
+  M20: { c: 1, s: 1.5, a: 3, label: "1 : 1.5 : 3", fck: 20, usage: "Standard RCC Structure (Slabs/Beams/Columns)" },
+  M25: { c: 1, s: 1,   a: 2, label: "1 : 1 : 2",   fck: 25, usage: "Heavy Structural RCC Framework" }
+};
+
+const DEFAULT_SETTINGS = {
+  cementRate: 420,
+  sandRate: 1600,
+  aggRate: 1400,
+  dryFactor: 1.54,
+  defaultWastage: 3,
+  waterRatio: 0.50
+};
+
+// Application State
+const AppState = {
+  activeProject: {
+    id: "proj_demo_1",
+    name: "Apex Horizon - Floor 2 Roof Slab",
+    location: "Plot 42, Civil Station Road, Bengaluru",
+    date: new Date().toISOString().split('T')[0],
+    structure: "Roof Slab & Beams",
+    grade: "M20",
+    volume: 10,
+    notes: "Specified clear cover 25mm, slump 100mm, site handling via tower crane."
+  },
+  projects: [],
+  settings: { ...DEFAULT_SETTINGS },
+  currentCalc: null
+};
+
+// Currency Formatter
+function formatINR(val) {
+  if (isNaN(val) || !isFinite(val)) return "₹ 0";
+  return new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+    maximumFractionDigits: 0
+  }).format(Math.round(val));
+}
+
+// Show Toast
+function showToast(msg) {
+  const el = document.getElementById("appToast");
+  document.getElementById("toastMessage").textContent = msg;
+  el.style.display = "flex";
+  setTimeout(() => { el.style.display = "none"; }, 3400);
+}
+
+// Sidebar toggle on mobile
+function toggleSidebar() {
+  document.getElementById("appSidebar").classList.toggle("open");
+}
+
+// Navigation Controller
+function switchNav(navKey) {
+  document.querySelectorAll(".nav-item").forEach(item => item.classList.remove("active"));
+  document.querySelectorAll(".view-section").forEach(sec => sec.classList.remove("active"));
+
+  // Find link matching navigation
+  const links = document.querySelectorAll(".sidebar-menu .nav-item");
+  const map = {
+    'dashboard': 0,
+    'new-project': 1,
+    'calculator': 2,
+    'waste-analysis': 3,
+    'boq-reports': 4,
+    'settings': 5
+  };
+  if (links[map[navKey]]) links[map[navKey]].classList.add("active");
+
+  const targetSec = document.getElementById("view-" + navKey);
+  if (targetSec) {
+    targetSec.classList.add("active");
+  }
+
+  // Close sidebar on mobile
+  document.getElementById("appSidebar").classList.remove("open");
+
+  // Specific view hooks
+  if (navKey === 'waste-analysis' || navKey === 'boq-reports' || navKey === 'dashboard') {
+    runLiveCalculation();
+  }
+  if (navKey === 'boq-reports') {
+    updateReportView();
+  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/**
+ * CORE CONCRETE CALCULATION ENGINE
+ * Strictly preserves exact mathematical civil engineering formulas.
+ */
+function computeConcreteEstimate(params) {
+  const wet = Math.max(0.001, parseFloat(params.volume) || 10);
+  const gradeKey = params.grade || "M20";
+  const r = NOMINAL_MIX_RATIOS[gradeKey] || NOMINAL_MIX_RATIOS["M20"];
+  const wastage = Math.max(0, Math.min(50, parseFloat(params.wastage) || 0));
+  const cementRate = parseFloat(params.cementRate) || 420;
+  const sandRate = parseFloat(params.sandRate) || 1600;
+  const aggRate = parseFloat(params.aggRate) || 1400;
+  const dryFactor = parseFloat(AppState.settings.dryFactor) || 1.54;
+  const waterRatio = parseFloat(AppState.settings.waterRatio) || 0.50;
+
+  // 1. Dry Volume
+  const dry = wet * dryFactor;
+  const sum = r.c + r.s + r.a;
+
+  // 2. Base ingredients volumes (0% wastage)
+  const baseCementM3 = (dry * r.c) / sum;
+  const baseSandM3 = (dry * r.s) / sum;
+  const baseAggM3 = (dry * r.a) / sum;
+
+  const baseCementBags = Math.ceil(baseCementM3 / 0.0347);
+  const baseCementKg = baseCementBags * 50;
+  const baseCementCost = baseCementBags * cementRate;
+  const baseSandCost = baseSandM3 * sandRate;
+  const baseAggCost = baseAggM3 * aggRate;
+  const baseTotalCost = baseCementCost + baseSandCost + baseAggCost;
+
+  // 3. Ingredient volumes with wastage applied
+  const wastageFactor = 1 + (wastage / 100);
+  const cementM3Wastage = baseCementM3 * wastageFactor;
+  const sandM3Wastage = baseSandM3 * wastageFactor;
+  const aggM3Wastage = baseAggM3 * wastageFactor;
+
+  // 4. Commercial Packaging (50 kg bags)
+  const cementBags = Math.ceil(cementM3Wastage / 0.0347);
+  const cementKg = cementBags * 50;
+
+  // 5. Water requirement (w/c ratio)
+  const waterLitres = Math.round(cementKg * waterRatio);
+
+  // 6. Final Financial Costs
+  const cementCost = cementBags * cementRate;
+  const sandCost = sandM3Wastage * sandRate;
+  const aggCost = aggM3Wastage * aggRate;
+  const totalCost = cementCost + sandCost + aggCost;
+  const unitCost = totalCost / wet;
+
+  // 7. Waste Breakdown
+  const wasteBags = Math.max(0, cementBags - baseCementBags);
+  const wasteSandM3 = Math.max(0, sandM3Wastage - baseSandM3);
+  const wasteAggM3 = Math.max(0, aggM3Wastage - baseAggM3);
+  const wasteCost = Math.max(0, totalCost - baseTotalCost);
+
+  // Secondary units
+  const wetCuFt = wet * 35.3147;
+  const sandCuFt = sandM3Wastage * 35.3147;
+  const aggCuFt = aggM3Wastage * 35.3147;
+  const sandBrass = sandM3Wastage / 2.8317;
+  const aggBrass = aggM3Wastage / 2.8317;
+
+  return {
+    wet, dry, r, gradeKey, wastage, dryFactor,
+    base: {
+      cementM3: baseCementM3,
+      cementBags: baseCementBags,
+      sandM3: baseSandM3,
+      aggM3: baseAggM3,
+      totalCost: baseTotalCost
+    },
+    final: {
+      cementM3: cementM3Wastage,
+      cementBags,
+      cementKg,
+      sandM3: sandM3Wastage,
+      sandCuFt,
+      sandBrass,
+      aggM3: aggM3Wastage,
+      aggCuFt,
+      aggBrass,
+      waterLitres,
+      cementCost,
+      sandCost,
+      aggCost,
+      totalCost,
+      unitCost
+    },
+    waste: {
+      bags: wasteBags,
+      sandM3: wasteSandM3,
+      aggM3: wasteAggM3,
+      cost: wasteCost,
+      percentage: wastage
+    },
+    rates: { cementRate, sandRate, aggRate },
+    imperial: { wetCuFt }
+  };
+}
+
+/**
+ * Execute Live Calculation on Calculator Page & Sync Views
+ */
+function runLiveCalculation() {
+  const alertBox = document.getElementById("calcValidationAlert");
+  const alertMsg = document.getElementById("calcValidationMsg");
+
+  const grade = document.getElementById("calcGrade").value;
+  const wet = parseFloat(document.getElementById("calcVolume").value);
+  const wastage = parseFloat(document.getElementById("calcWastage").value);
+  const cementRate = parseFloat(document.getElementById("calcCementRate").value);
+  const sandRate = parseFloat(document.getElementById("calcSandRate").value);
+  const aggRate = parseFloat(document.getElementById("calcAggRate").value);
+
+  // Validation
+  if (isNaN(wet) || wet <= 0) {
+    alertMsg.textContent = "Please enter a valid positive Wet Concrete Volume (m³).";
+    alertBox.style.display = "flex";
+    return;
+  }
+  if (isNaN(cementRate) || cementRate < 0 || isNaN(sandRate) || sandRate < 0 || isNaN(aggRate) || aggRate < 0) {
+    alertMsg.textContent = "Material unit rates cannot be negative. Please enter valid rates.";
+    alertBox.style.display = "flex";
+    return;
+  }
+  if (isNaN(wastage) || wastage < 0 || wastage > 50) {
+    alertMsg.textContent = "Site wastage percentage must be between 0% and 50%.";
+    alertBox.style.display = "flex";
+    return;
+  }
+  alertBox.style.display = "none";
+
+  // Execute math
+  const calc = computeConcreteEstimate({
+    volume: wet,
+    grade,
+    wastage,
+    cementRate,
+    sandRate,
+    aggRate
+  });
+  AppState.currentCalc = calc;
+
+  // Update Mix Calculator View
+  const r = calc.r;
+  document.getElementById("gradeRatioLabel").textContent = r.label;
+  document.getElementById("gradeHelperText").textContent = `28-day Characteristic Strength: ${r.fck} N/mm² (${r.usage})`;
+  document.getElementById("calcVolumeCuFt").textContent = `≈ ${calc.imperial.wetCuFt.toFixed(2)} cubic feet (cu ft)`;
+  document.getElementById("calcWastageBadge").textContent = `${wastage}% allowance`;
+
+  document.getElementById("resDryVol").textContent = `${calc.dry.toFixed(2)} m³`;
+  document.getElementById("resCementBags").textContent = `${calc.final.cementBags} Bags`;
+  document.getElementById("resCementDetails").textContent = `${calc.final.cementKg.toLocaleString("en-IN")} kg (${calc.final.cementM3.toFixed(2)} m³) `;
+  
+  document.getElementById("resSandVol").textContent = `${calc.final.sandM3.toFixed(2)} m³`;
+  document.getElementById("resSandDetails").textContent = `${calc.final.sandCuFt.toFixed(1)} cu ft • ${calc.final.sandBrass.toFixed(2)} brass`;
+
+  document.getElementById("resAggVol").textContent = `${calc.final.aggM3.toFixed(2)} m³`;
+  document.getElementById("resAggDetails").textContent = `${calc.final.aggCuFt.toFixed(1)} cu ft • ${calc.final.aggBrass.toFixed(2)} brass`;
+
+  document.getElementById("resWaterL").textContent = `${calc.final.waterLitres.toLocaleString("en-IN")} L`;
+  document.getElementById("resUnitRate").textContent = `${formatINR(calc.final.unitCost)} / m³`;
+  document.getElementById("resTotalCost").textContent = formatINR(calc.final.totalCost);
+  document.getElementById("resCostBreakdownLabel").textContent = 
+    `Cement: ${formatINR(calc.final.cementCost)} | Sand: ${formatINR(calc.final.sandCost)} | Aggregate: ${formatINR(calc.final.aggCost)}`;
+
+  // Update Dashboard Overview Cards
+  document.getElementById("dashWetVol").textContent = `${calc.wet.toFixed(2)} m³`;
+  document.getElementById("dashDryVol").textContent = `Dry Volume: ${calc.dry.toFixed(2)} m³`;
+  document.getElementById("dashTotalCost").textContent = formatINR(calc.final.totalCost);
+  document.getElementById("dashUnitCost").textContent = `Rate: ${formatINR(calc.final.unitCost)} / m³`;
+  document.getElementById("dashCementBags").textContent = `${calc.final.cementBags} Bags`;
+  document.getElementById("dashCementKg").textContent = `${calc.final.cementKg.toLocaleString("en-IN")} kg total`;
+  document.getElementById("dashWasteCost").textContent = formatINR(calc.waste.cost);
+  document.getElementById("dashWastePercent").textContent = `At ${wastage}% Site Wastage`;
+
+  // Update Waste Analysis View
+  renderWasteAnalysis(calc);
+}
+
+/**
+ * Render Waste Analysis Tables, Scenarios & SVG Chart
+ */
+function renderWasteAnalysis(calc) {
+  document.getElementById("wasteDisplayBadge").textContent = `${calc.wastage}%`;
+
+  // Decomposition table
+  const tbody = document.getElementById("wasteDecompBody");
+  tbody.innerHTML = `
+    <tr>
+      <td><strong>Ordinary Portland Cement (OPC/PPC)</strong><br><small style="color:#64748b;">50 kg commercial bags</small></td>
+      <td>${calc.base.cementBags} bags (${(calc.base.cementBags * 50).toLocaleString("en-IN")} kg)</td>
+      <td><span style="color:#b91c1c; font-weight:700;">+${calc.waste.bags} bags</span> (${(calc.waste.bags * 50).toLocaleString("en-IN")} kg)</td>
+      <td><strong>${calc.final.cementBags} bags</strong></td>
+      <td class="text-right">${formatINR(calc.rates.cementRate)}/bag</td>
+      <td class="text-right" style="color:#b91c1c; font-weight:700;">+${formatINR(calc.waste.bags * calc.rates.cementRate)}</td>
+      <td class="text-right" style="font-weight:700;">${formatINR(calc.final.cementCost)}</td>
+    </tr>
+    <tr>
+      <td><strong>Sand / Fine Aggregate</strong><br><small style="color:#64748b;">Zone II / M-Sand</small></td>
+      <td>${calc.base.sandM3.toFixed(2)} m³</td>
+      <td><span style="color:#b91c1c; font-weight:700;">+${calc.waste.sandM3.toFixed(2)} m³</span></td>
+      <td><strong>${calc.final.sandM3.toFixed(2)} m³</strong></td>
+      <td class="text-right">${formatINR(calc.rates.sandRate)}/m³</td>
+      <td class="text-right" style="color:#b91c1c; font-weight:700;">+${formatINR(calc.waste.sandM3 * calc.rates.sandRate)}</td>
+      <td class="text-right" style="font-weight:700;">${formatINR(calc.final.sandCost)}</td>
+    </tr>
+    <tr>
+      <td><strong>Coarse Aggregate (20mm & 10mm)</strong><br><small style="color:#64748b;">Angular crushed granite</small></td>
+      <td>${calc.base.aggM3.toFixed(2)} m³</td>
+      <td><span style="color:#b91c1c; font-weight:700;">+${calc.waste.aggM3.toFixed(2)} m³</span></td>
+      <td><strong>${calc.final.aggM3.toFixed(2)} m³</strong></td>
+      <td class="text-right">${formatINR(calc.rates.aggRate)}/m³</td>
+      <td class="text-right" style="color:#b91c1c; font-weight:700;">+${formatINR(calc.waste.aggM3 * calc.rates.aggRate)}</td>
+      <td class="text-right" style="font-weight:700;">${formatINR(calc.final.aggCost)}</td>
+    </tr>
+    <tr style="background:#fef2f2; font-weight:800; border-top:2px solid #fecaca;">
+      <td colspan="5" style="color:#991b1b;">TOTAL FINANCIAL IMPACT OF SITE WASTAGE</td>
+      <td class="text-right" style="color:#b91c1c; font-size:1.05rem;">+${formatINR(calc.waste.cost)}</td>
+      <td class="text-right" style="color:#047857; font-size:1.05rem;">${formatINR(calc.final.totalCost)}</td>
+    </tr>
+  `;
+
+  // Scenario Matrix Comparison
+  const scenarios = [
+    { name: "Theoretical Ideal (0% Loss)", wastage: 0, desc: "Theoretical lab baseline (unachievable in field)" },
+    { name: "Controlled RMC Plant (3% Loss)", wastage: 3, desc: "Modern mechanized batching with pump placing" },
+    { name: "Average Site Handling (7% Loss)", wastage: 7, desc: "Manual site mixer with wheelbarrow transit" },
+    { name: "Poor Site Practice (12% Loss)", wastage: 12, desc: "Unpaved subgrade, rough forms, high spillage" }
+  ];
+
+  const scenBody = document.getElementById("scenariosTableBody");
+  scenBody.innerHTML = "";
+
+  const chartData = [];
+  const baseEstimate = computeConcreteEstimate({
+    volume: calc.wet,
+    grade: calc.gradeKey,
+    wastage: 0,
+    cementRate: calc.rates.cementRate,
+    sandRate: calc.rates.sandRate,
+    aggRate: calc.rates.aggRate
+  });
+
+  scenarios.forEach(scen => {
+    const sCalc = computeConcreteEstimate({
+      volume: calc.wet,
+      grade: calc.gradeKey,
+      wastage: scen.wastage,
+      cementRate: calc.rates.cementRate,
+      sandRate: calc.rates.sandRate,
+      aggRate: calc.rates.aggRate
+    });
+
+    const extraCost = Math.max(0, sCalc.final.totalCost - baseEstimate.final.totalCost);
+    chartData.push({
+      label: `${scen.wastage}% Waste`,
+      name: scen.name,
+      totalCost: sCalc.final.totalCost,
+      extraCost: extraCost
+    });
+
+    const tr = document.createElement("tr");
+    if (scen.wastage === calc.wastage) {
+      tr.style.background = "#eff6ff";
+      tr.style.fontWeight = "700";
+    }
+    tr.innerHTML = `
+      <td><strong>${scen.name}</strong><br><small style="color:#64748b;">${scen.desc}</small></td>
+      <td>${scen.wastage}%</td>
+      <td>${sCalc.final.cementBags} bags</td>
+      <td>${sCalc.final.sandM3.toFixed(2)} m³</td>
+      <td>${sCalc.final.aggM3.toFixed(2)} m³</td>
+      <td class="text-right" style="font-weight:700;">${formatINR(sCalc.final.totalCost)}</td>
+      <td class="text-right" style="color:${extraCost > 0 ? '#b91c1c' : '#047857'}; font-weight:700;">
+        ${extraCost > 0 ? '+' + formatINR(extraCost) : '₹ 0 (Baseline)'}
+      </td>
+    `;
+    scenBody.appendChild(tr);
+  });
+
+  // Render SVG Comparative Bar Chart
+  renderSvgChart(chartData);
+}
+
+/**
+ * Responsive Inline SVG Comparative Bar Chart
+ */
+function renderSvgChart(data) {
+  const wrapper = document.getElementById("svgChartWrapper");
+  const maxCost = Math.max(...data.map(d => d.totalCost)) * 1.15;
+  const svgWidth = 680;
+  const svgHeight = 220;
+  const barWidth = 90;
+  const gap = 60;
+  const startX = 60;
+  const baseY = 175;
+
+  let barsSvg = "";
+  data.forEach((d, i) => {
+    const x = startX + i * (barWidth + gap);
+    const barH = (d.totalCost / maxCost) * 140;
+    const y = baseY - barH;
+    const isBase = d.extraCost === 0;
+
+    barsSvg += `
+      <g>
+        <!-- Bar -->
+        <rect x="${x}" y="${y}" width="${barWidth}" height="${barH}" rx="5" fill="${isBase ? '#2563eb' : '#d97706'}" opacity="0.9"></rect>
+        <!-- Value Label -->
+        <text x="${x + barWidth / 2}" y="${y - 8}" text-anchor="middle" font-size="11" font-weight="bold" fill="#0f172a">
+          ${formatINR(d.totalCost)}
+        </text>
+        <!-- Category Label -->
+        <text x="${x + barWidth / 2}" y="${baseY + 18}" text-anchor="middle" font-size="11" font-weight="600" fill="#475569">
+          ${d.label}
+        </text>
+        <!-- Extra Tag -->
+        <text x="${x + barWidth / 2}" y="${baseY + 32}" text-anchor="middle" font-size="9.5" fill="${isBase ? '#047857' : '#b91c1c'}">
+          ${isBase ? 'Base 100%' : '+' + formatINR(d.extraCost)}
+        </text>
+      </g>
+    `;
+  });
+
+  wrapper.innerHTML = `
+    <svg width="${svgWidth}" height="${svgHeight}" viewBox="0 0 ${svgWidth} ${svgHeight}" style="max-width:100%; height:auto; display:block; margin:auto;">
+      <!-- Gridlines -->
+      <line x1="40" y1="35" x2="${svgWidth - 20}" y2="35" stroke="#e2e8f0" stroke-dasharray="3,3" />
+      <line x1="40" y1="105" x2="${svgWidth - 20}" y2="105" stroke="#e2e8f0" stroke-dasharray="3,3" />
+      <line x1="40" y1="${baseY}" x2="${svgWidth - 20}" y2="${baseY}" stroke="#94a3b8" stroke-width="1.5" />
+      ${barsSvg}
+    </svg>
+  `;
+}
+
+/**
+ * Update Report & BoQ Sheet View
+ */
+function updateReportView() {
+  if (!AppState.currentCalc) runLiveCalculation();
+  const c = AppState.currentCalc;
+  const p = AppState.activeProject;
+
+  const now = new Date();
+  document.getElementById("repTimestamp").textContent = now.toLocaleDateString("en-IN", {
+    day: '2-digit', month: 'short', year: 'numeric'
+  }) + ", " + now.toLocaleTimeString("en-IN", { hour: '2-digit', minute: '2-digit' });
+
+  document.getElementById("repProjName").textContent = p.name || "Default Estimation Project";
+  document.getElementById("repProjLocation").textContent = p.location || "Site Location Bangalore";
+  document.getElementById("repProjStructure").textContent = p.structure || "Roof Slab & Beams";
+  document.getElementById("repProjGrade").textContent = `${c.gradeKey} (${c.r.label})`;
+  document.getElementById("repProjVolume").textContent = `${c.wet.toFixed(2)} m³`;
+  document.getElementById("repProjDryVolume").textContent = `${c.dry.toFixed(2)} m³ (× ${c.dryFactor} Factor)`;
+
+  // BoQ Table Rows
+  const tbody = document.getElementById("repBoqBody");
+  tbody.innerHTML = `
+    <tr>
+      <td>01</td>
+      <td>
+        <strong>Ordinary Portland Cement (OPC / PPC 43 or 53 Grade)</strong><br>
+        <span style="font-size:0.75rem; color:#64748b;">Conforming to IS 269 / IS 1489. Packed in 50 kg moisture-proof HDPE bags.</span>
+      </td>
+      <td><strong>${c.final.cementBags}</strong></td>
+      <td>Bags</td>
+      <td class="text-right">${formatINR(c.rates.cementRate)}</td>
+      <td class="text-right" style="font-weight:700;">${formatINR(c.final.cementCost)}</td>
+    </tr>
+    <tr>
+      <td>02</td>
+      <td>
+        <strong>Fine Aggregate (River Sand / Manufactured Sand - M-Sand)</strong><br>
+        <span style="font-size:0.75rem; color:#64748b;">Grading Zone II / Zone III conforming to IS 383:2016. Clean, silt content &lt; 3%.</span>
+      </td>
+      <td><strong>${c.final.sandM3.toFixed(2)}</strong> (${c.final.sandBrass.toFixed(2)} brass)</td>
+      <td>m³</td>
+      <td class="text-right">${formatINR(c.rates.sandRate)}</td>
+      <td class="text-right" style="font-weight:700;">${formatINR(c.final.sandCost)}</td>
+    </tr>
+    <tr>
+      <td>03</td>
+      <td>
+        <strong>Coarse Aggregate (Graded 20 mm & 10 mm blended)</strong><br>
+        <span style="font-size:0.75rem; color:#64748b;">Hard, durable, angular crushed blue metal granite stone aggregate conforming to IS 383.</span>
+      </td>
+      <td><strong>${c.final.aggM3.toFixed(2)}</strong> (${c.final.aggBrass.toFixed(2)} brass)</td>
+      <td>m³</td>
+      <td class="text-right">${formatINR(c.rates.aggRate)}</td>
+      <td class="text-right" style="font-weight:700;">${formatINR(c.final.aggCost)}</td>
+    </tr>
+    <tr>
+      <td>04</td>
+      <td>
+        <strong>Mixing & Curing Water (Approximate Requisite)</strong><br>
+        <span style="font-size:0.75rem; color:#64748b;">Clean potable water free from deleterious organic salts, conforming to IS 456 Clause 5.4.</span>
+      </td>
+      <td><strong>${c.final.waterLitres.toLocaleString("en-IN")}</strong></td>
+      <td>Litres</td>
+      <td class="text-right">Included</td>
+      <td class="text-right" style="color:#64748b;">Site Source</td>
+    </tr>
+    <tr style="background:#ecfdf5; font-weight:800; border-top:2px solid #10b981;">
+      <td colspan="5" style="color:#065f46; font-size:1.02rem;">
+        TOTAL ESTIMATED MATERIAL PROCUREMENT EXPENDITURE
+      </td>
+      <td class="text-right" style="color:#047857; font-size:1.15rem;">
+        ${formatINR(c.final.totalCost)}
+      </td>
+    </tr>
+    <tr style="background:#f0f9ff; font-weight:700;">
+      <td colspan="5" style="color:#0369a1;">
+        ESTIMATED MATERIAL PROCUREMENT RATE PER CUBIC METRE (m³)
+      </td>
+      <td class="text-right" style="color:#0284c7; font-size:1.02rem;">
+        ${formatINR(c.final.unitCost)} / m³
+      </td>
+    </tr>
+  `;
+
+  document.getElementById("repWasteSummary").innerHTML = `
+    <strong>Site Wastage Factor Applied: ${c.wastage}%</strong><br>
+    Theoretical base expenditure (0% loss) would be ${formatINR(c.base.totalCost)}. 
+    The additional material quantity allocated for transit, handling, and form leakage is 
+    <span style="color:#b91c1c; font-weight:700;">${formatINR(c.waste.cost)}</span> 
+    (consisting of +${c.waste.bags} cement bags, +${c.waste.sandM3.toFixed(2)} m³ sand, and +${c.waste.aggM3.toFixed(2)} m³ aggregate).
+  `;
+}
+
+/**
+ * Copy Formatted Text Report to Clipboard
+ */
+function copyReportText() {
+  if (!AppState.currentCalc) runLiveCalculation();
+  const c = AppState.currentCalc;
+  const p = AppState.activeProject;
+
+  const text = `========================================================
+CIVIL ENGINEERING ESTIMATE & MATERIAL WASTE AUDIT
+Project: ${p.name}
+Location: ${p.location}
+Date: ${p.date} | Structure: ${p.structure}
+Concrete Grade: ${c.gradeKey} (${c.r.label})
+Wet Volume: ${c.wet.toFixed(2)} m³ | Dry Volume: ${c.dry.toFixed(2)} m³
+--------------------------------------------------------
+MATERIAL QUANTITIES REQUIRED:
+- Cement: ${c.final.cementBags} bags (${c.final.cementKg} kg)
+- Sand: ${c.final.sandM3.toFixed(2)} m³ (${c.final.sandBrass.toFixed(2)} brass)
+- Aggregate: ${c.final.aggM3.toFixed(2)} m³ (${c.final.aggBrass.toFixed(2)} brass)
+- Water: ${c.final.waterLitres} Litres (w/c = 0.50)
+--------------------------------------------------------
+COST BREAKDOWN:
+- Cement Cost: ${formatINR(c.final.cementCost)}
+- Sand Cost: ${formatINR(c.final.sandCost)}
+- Aggregate Cost: ${formatINR(c.final.aggCost)}
+- TOTAL ESTIMATED COST: ${formatINR(c.final.totalCost)}
+- Rate per m³: ${formatINR(c.final.unitCost)} / m³
+- Wastage Impact: ${formatINR(c.waste.cost)} (${c.wastage}%)
+========================================================`;
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => {
+      showToast("Report text copied to clipboard!");
+    });
+  } else {
+    showToast("Summary generated");
+  }
+}
+
+/**
+ * LOCAL STORAGE PROJECT MANAGEMENT
+ */
+const STORAGE_KEY_PROJECTS = "smart_concrete_projects_v2";
+const STORAGE_KEY_SETTINGS = "smart_concrete_settings_v2";
+
+function loadStorage() {
+  try {
+    const rawSettings = localStorage.getItem(STORAGE_KEY_SETTINGS);
+    if (rawSettings) AppState.settings = JSON.parse(rawSettings);
+
+    const rawProjects = localStorage.getItem(STORAGE_KEY_PROJECTS);
+    if (rawProjects) {
+      AppState.projects = JSON.parse(rawProjects);
+    } else {
+      // Seed initial realistic student projects
+      AppState.projects = [
+        {
+          id: "proj_demo_1",
+          name: "Apex Horizon - Floor 2 Roof Slab",
+          location: "Plot 42, Civil Station Road, Bengaluru",
+          date: new Date().toISOString().split('T')[0],
+          structure: "Roof Slab & Beams",
+          grade: "M20",
+          volume: 10,
+          wastage: 3,
+          notes: "Specified clear cover 25mm, slump 100mm."
+        },
+        {
+          id: "proj_demo_2",
+          name: "Metro Industrial Shed - Column Footings",
+          location: "Peenya Industrial Area, Phase 1",
+          date: new Date().toISOString().split('T')[0],
+          structure: "Isolated Column Footings",
+          grade: "M25",
+          volume: 24,
+          wastage: 4,
+          notes: "Isolated trapezoidal footings with 50mm clear cover."
+        }
+      ];
+      saveProjectsToStorage();
+    }
+  } catch (err) {
+    console.error("Storage loading error:", err);
+  }
+}
+
+function saveProjectsToStorage() {
+  try {
+    localStorage.setItem(STORAGE_KEY_PROJECTS, JSON.stringify(AppState.projects));
+  } catch (err) {
+    console.error("Storage saving error:", err);
+  }
+}
+
+function saveSettingsToStorage() {
+  try {
+    localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(AppState.settings));
+  } catch (err) {
+    console.error("Settings storage error:", err);
+  }
+}
+
+function renderProjectsTable() {
+  const tbody = document.getElementById("projectsTableBody");
+  tbody.innerHTML = "";
+
+  if (AppState.projects.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="8" class="text-center" style="padding:24px; color:#64748b;">No saved projects found. Click "Create New Project" to get started.</td></tr>`;
+    return;
+  }
+
+  AppState.projects.forEach(p => {
+    const calc = computeConcreteEstimate({
+      volume: p.volume,
+      grade: p.grade,
+      wastage: p.wastage || 3,
+      cementRate: AppState.settings.cementRate,
+      sandRate: AppState.settings.sandRate,
+      aggRate: AppState.settings.aggRate
+    });
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>
+        <strong>${escapeHtml(p.name)}</strong><br>
+        <small style="color:#64748b;">${p.date}</small>
+      </td>
+      <td>${escapeHtml(p.location)}</td>
+      <td>${escapeHtml(p.structure)}</td>
+      <td><span style="background:#eff6ff; color:#1e3a8a; padding:2px 7px; border-radius:4px; font-weight:700;">${p.grade}</span></td>
+      <td>${p.volume} m³</td>
+      <td class="text-right" style="font-weight:700; color:#047857;">${formatINR(calc.final.totalCost)}</td>
+      <td class="text-right" style="color:#b91c1c; font-weight:600;">${formatINR(calc.waste.cost)}</td>
+      <td class="text-center">
+        <div style="display:inline-flex; gap:6px;">
+          <button class="btn btn-primary btn-sm" onclick="loadProjectIntoCalc('${p.id}')" title="Load into Calculator">Load</button>
+          <button class="btn btn-secondary btn-sm" onclick="editProjectModal('${p.id}')" title="Edit Parameters">Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="promptDeleteProject('${p.id}', '${escapeHtml(p.name)}')" title="Delete">&times;</button>
+        </div>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function escapeHtml(str) {
+  if (!str) return "";
+  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}
+
+function loadProjectIntoCalc(id) {
+  const p = AppState.projects.find(x => x.id === id);
+  if (!p) return;
+  AppState.activeProject = { ...p };
+  document.getElementById("activeProjectName").textContent = p.name;
+
+  document.getElementById("calcGrade").value = p.grade;
+  document.getElementById("calcVolume").value = p.volume;
+  if (p.wastage !== undefined) document.getElementById("calcWastage").value = p.wastage;
+
+  runLiveCalculation();
+  switchNav('calculator');
+  showToast(`Loaded "${p.name}" into Calculator`);
+}
+
+function editProjectModal(id) {
+  const p = AppState.projects.find(x => x.id === id);
+  if (!p) return;
+  document.getElementById("editProjectId").value = p.id;
+  document.getElementById("projName").value = p.name;
+  document.getElementById("projLocation").value = p.location;
+  document.getElementById("projDate").value = p.date;
+  document.getElementById("projStructure").value = p.structure;
+  document.getElementById("projGrade").value = p.grade;
+  document.getElementById("projVolume").value = p.volume;
+  document.getElementById("projNotes").value = p.notes || "";
+  document.getElementById("projectFormTitle").textContent = "Edit Project Parameters";
+  switchNav('new-project');
+}
+
+async function handleSaveProject(e) {
+  e.preventDefault();
+  const editId = document.getElementById("editProjectId").value;
+  const name = document.getElementById("projName").value.trim();
+  const location = document.getElementById("projLocation").value.trim();
+  const date = document.getElementById("projDate").value;
+  const structure = document.getElementById("projStructure").value;
+  const grade = document.getElementById("projGrade").value;
+  const volume = parseFloat(document.getElementById("projVolume").value) || 10;
+  const notes = document.getElementById("projNotes").value.trim();
+
+  let targetProject;
+
+  if (editId) {
+    const idx = AppState.projects.findIndex(p => p.id === editId);
+    if (idx !== -1) {
+      targetProject = {
+        ...AppState.projects[idx],
+        name, location, date, structure, grade, volume, notes,
+        updatedAt: new Date().toISOString()
+      };
+      AppState.projects[idx] = targetProject;
+      AppState.activeProject = targetProject;
+      showToast("Project updated successfully!");
+    }
+  } else {
+    targetProject = {
+      id: "proj_" + Date.now(),
+      name, location, date, structure, grade, volume, notes,
+      wastage: AppState.settings.defaultWastage || 3,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    AppState.projects.unshift(targetProject);
+    AppState.activeProject = targetProject;
+    showToast("New project saved successfully!");
+  }
+
+  // Save to Cloud Firestore if user is authenticated with cloud account
+  if (currentUser && !currentUser.isGuest && targetProject) {
+    try {
+      await saveUserProjectToCloud(currentUser.uid, targetProject);
+      showToast("Synced to Cloud Firestore!");
+    } catch (err) {
+      console.warn("Could not save to Cloud Firestore:", err);
+    }
+  }
+
+  saveProjectsToStorage();
+  renderProjectsTable();
+
+  // Load into calculator
+  document.getElementById("activeProjectName").textContent = name;
+  document.getElementById("calcGrade").value = grade;
+  document.getElementById("calcVolume").value = volume;
+  runLiveCalculation();
+  switchNav('calculator');
+}
+
+async function quickSaveCurrentProject() {
+  const c = AppState.currentCalc;
+  if (!c) runLiveCalculation();
+  const active = AppState.activeProject;
+
+  active.grade = document.getElementById("calcGrade").value;
+  active.volume = parseFloat(document.getElementById("calcVolume").value);
+  active.wastage = parseFloat(document.getElementById("calcWastage").value);
+  active.updatedAt = new Date().toISOString();
+
+  const existingIdx = AppState.projects.findIndex(p => p.id === active.id);
+  if (existingIdx !== -1) {
+    AppState.projects[existingIdx] = { ...active };
+  } else {
+    AppState.projects.unshift(active);
+  }
+
+  if (currentUser && !currentUser.isGuest) {
+    try {
+      await saveUserProjectToCloud(currentUser.uid, active);
+      showToast(`Updated "${active.name}" in Cloud Firestore!`);
+    } catch (err) {
+      console.warn("Cloud save error:", err);
+      showToast(`Saved "${active.name}" locally.`);
+    }
+  } else {
+    showToast(`Saved "${active.name}" to database!`);
+  }
+
+  saveProjectsToStorage();
+  renderProjectsTable();
+}
+
+let pendingDeleteId = null;
+function promptDeleteProject(id, name) {
+  pendingDeleteId = id;
+  document.getElementById("deleteProjectName").textContent = name;
+  document.getElementById("deleteModal").style.display = "flex";
+}
+
+function closeDeleteModal() {
+  document.getElementById("deleteModal").style.display = "none";
+  pendingDeleteId = null;
+}
+
+document.getElementById("confirmDeleteBtn").addEventListener("click", async () => {
+  if (pendingDeleteId) {
+    const idToDelete = pendingDeleteId;
+    AppState.projects = AppState.projects.filter(p => p.id !== idToDelete);
+    saveProjectsToStorage();
+    renderProjectsTable();
+    closeDeleteModal();
+
+    if (currentUser && !currentUser.isGuest) {
+      try {
+        await deleteUserProjectFromCloud(currentUser.uid, idToDelete);
+        showToast("Project deleted from Cloud Firestore.");
+      } catch (err) {
+        console.warn("Cloud delete error:", err);
+        showToast("Project deleted locally.");
+      }
+    } else {
+      showToast("Project deleted successfully.");
+    }
+  }
+});
+
+function confirmResetAllData() {
+  if (confirm("Are you sure you want to clear all projects and restore standard Civil Engineering mini-project defaults?")) {
+    localStorage.removeItem(STORAGE_KEY_PROJECTS);
+    localStorage.removeItem(STORAGE_KEY_SETTINGS);
+    loadStorage();
+    restoreDefaultSettings();
+    renderProjectsTable();
+    runLiveCalculation();
+    showToast("System database reset to initial demonstration state.");
+  }
+}
+
+/**
+ * Settings Form Handlers
+ */
+function handleSaveSettings(e) {
+  e.preventDefault();
+  AppState.settings.cementRate = parseFloat(document.getElementById("setDefCementRate").value) || 420;
+  AppState.settings.sandRate = parseFloat(document.getElementById("setDefSandRate").value) || 1600;
+  AppState.settings.aggRate = parseFloat(document.getElementById("setDefAggRate").value) || 1400;
+  AppState.settings.dryFactor = parseFloat(document.getElementById("setDryFactor").value) || 1.54;
+  AppState.settings.defaultWastage = parseFloat(document.getElementById("setDefWastage").value) || 3;
+  AppState.settings.waterRatio = parseFloat(document.getElementById("setWaterRatio").value) || 0.50;
+
+  saveSettingsToStorage();
+  
+  // Sync rates to active calculator inputs
+  document.getElementById("calcCementRate").value = AppState.settings.cementRate;
+  document.getElementById("calcSandRate").value = AppState.settings.sandRate;
+  document.getElementById("calcAggRate").value = AppState.settings.aggRate;
+  
+  runLiveCalculation();
+  showToast("Engineering settings saved!");
+}
+
+function restoreDefaultSettings() {
+  AppState.settings = { ...DEFAULT_SETTINGS };
+  document.getElementById("setDefCementRate").value = DEFAULT_SETTINGS.cementRate;
+  document.getElementById("setDefSandRate").value = DEFAULT_SETTINGS.sandRate;
+  document.getElementById("setDefAggRate").value = DEFAULT_SETTINGS.aggRate;
+  document.getElementById("setDryFactor").value = DEFAULT_SETTINGS.dryFactor;
+  document.getElementById("setDefWastage").value = DEFAULT_SETTINGS.defaultWastage;
+  document.getElementById("setWaterRatio").value = DEFAULT_SETTINGS.waterRatio;
+
+  document.getElementById("calcCementRate").value = DEFAULT_SETTINGS.cementRate;
+  document.getElementById("calcSandRate").value = DEFAULT_SETTINGS.sandRate;
+  document.getElementById("calcAggRate").value = DEFAULT_SETTINGS.aggRate;
+
+  saveSettingsToStorage();
+  runLiveCalculation();
+  showToast("Default rates and factors restored.");
+}
+
+function resetCalculatorDefaults() {
+  document.getElementById("calcGrade").value = "M20";
+  document.getElementById("calcVolume").value = "10";
+  document.getElementById("calcWastage").value = AppState.settings.defaultWastage || "3";
+  document.getElementById("calcCementRate").value = AppState.settings.cementRate || "420";
+  document.getElementById("calcSandRate").value = AppState.settings.sandRate || "1600";
+  document.getElementById("calcAggRate").value = AppState.settings.aggRate || "1400";
+  runLiveCalculation();
+  showToast("Calculator reset to defaults.");
+}
+
+function applyQuickPreset(type) {
+  if (type === 'slab') {
+    document.getElementById("calcGrade").value = "M20";
+    document.getElementById("calcVolume").value = "10";
+    document.getElementById("calcWastage").value = "3";
+  } else if (type === 'footing') {
+    document.getElementById("calcGrade").value = "M20";
+    document.getElementById("calcVolume").value = "5";
+    document.getElementById("calcWastage").value = "3";
+  } else if (type === 'pcc') {
+    document.getElementById("calcGrade").value = "M10";
+    document.getElementById("calcVolume").value = "4";
+    document.getElementById("calcWastage").value = "2.5";
+  } else if (type === 'heavy') {
+    document.getElementById("calcGrade").value = "M25";
+    document.getElementById("calcVolume").value = "25";
+    document.getElementById("calcWastage").value = "4";
+  }
+  runLiveCalculation();
+  showToast(`Applied preset: ${type.toUpperCase()}`);
+}
+
+function showFormulaAudit() {
+  document.getElementById("formulaModal").style.display = "flex";
+}
+
+function closeFormulaAudit() {
+  document.getElementById("formulaModal").style.display = "none";
+}
+
+// ============================================================================
+// AUTHENTICATION & CLOUD SYNC CONTROLLERS
+// ============================================================================
+
+function switchAuthTab(tab) {
+  const isLogin = tab === 'login';
+  document.getElementById("tabLogin").classList.toggle("active", isLogin);
+  document.getElementById("tabSignup").classList.toggle("active", !isLogin);
+  document.getElementById("loginForm").style.display = isLogin ? "block" : "none";
+  document.getElementById("signupForm").style.display = isLogin ? "none" : "block";
+  hideAuthError();
+  document.getElementById("authInfoBanner").style.display = "none";
+}
+
+function showAuthError(msg, isHtml = false) {
+  const errBanner = document.getElementById("authErrorBanner");
+  const msgEl = document.getElementById("authErrorMessage");
+  if (isHtml) {
+    msgEl.innerHTML = msg;
+  } else {
+    msgEl.textContent = msg;
+  }
+  errBanner.style.display = "flex";
+}
+
+function hideAuthError() {
+  document.getElementById("authErrorBanner").style.display = "none";
+}
+
+function togglePassword(inputId, iconId) {
+  const input = document.getElementById(inputId);
+  const icon = document.getElementById(iconId);
+  if (!input) return;
+  if (input.type === "password") {
+    input.type = "text";
+    icon.innerHTML = `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>`;
+  } else {
+    input.type = "password";
+    icon.innerHTML = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>`;
+  }
+}
+
+async function handleEmailLogin(e) {
+  e.preventDefault();
+  hideAuthError();
+  const email = document.getElementById("loginEmail").value;
+  const pass = document.getElementById("loginPassword").value;
+  const btn = document.getElementById("loginSubmitBtn");
+  const txt = document.getElementById("loginSubmitText");
+
+  btn.disabled = true;
+  txt.textContent = "Authenticating Session...";
+
+  try {
+    await loginWithEmail(email, pass);
+  } catch (err) {
+    let friendly = "Failed to sign in. Please verify your credentials.";
+    const code = err.code || "";
+    if (code === "auth/invalid-credential" || code === "auth/wrong-password") {
+      friendly = "Incorrect email or password. Please try again.";
+    } else if (code === "auth/user-not-found") {
+      friendly = "No account found with this email. Please create an account.";
+    } else if (code === "auth/invalid-email") {
+      friendly = "Please enter a valid email address.";
+    } else if (code === "auth/too-many-requests") {
+      friendly = "Too many failed login attempts. Please reset password or try again later.";
+    } else if (err.message) {
+      friendly = err.message;
+    }
+    showAuthError(friendly);
+  } finally {
+    btn.disabled = false;
+    txt.textContent = "Sign In to Dashboard";
+  }
+}
+
+async function handleEmailSignup(e) {
+  e.preventDefault();
+  hideAuthError();
+  const name = document.getElementById("signupName").value;
+  const email = document.getElementById("signupEmail").value;
+  const pass = document.getElementById("signupPassword").value;
+  const confirmPass = document.getElementById("signupConfirmPassword").value;
+  const btn = document.getElementById("signupSubmitBtn");
+  const txt = document.getElementById("signupSubmitText");
+
+  if (pass !== confirmPass) {
+    showAuthError("Passwords do not match. Please verify.");
+    return;
+  }
+  if (pass.length < 6) {
+    showAuthError("Password must be at least 6 characters long.");
+    return;
+  }
+
+  btn.disabled = true;
+  txt.textContent = "Creating Account...";
+
+  try {
+    await signupWithEmail(email, pass, name);
+  } catch (err) {
+    let friendly = "Failed to register account. Please try again.";
+    const code = err.code || "";
+    if (code === "auth/email-already-in-use") {
+      friendly = "This email is already registered. Please sign in instead.";
+    } else if (code === "auth/weak-password") {
+      friendly = "Password is too weak. Use at least 6 characters with mixed characters.";
+    } else if (code === "auth/invalid-email") {
+      friendly = "Please enter a valid email address.";
+    } else if (err.message) {
+      friendly = err.message;
+    }
+    showAuthError(friendly);
+  } finally {
+    btn.disabled = false;
+    txt.textContent = "Register New Account";
+  }
+}
+
+async function handleGoogleSignIn() {
+  hideAuthError();
+  const btn = document.getElementById("googleSignInBtn");
+  const txt = document.getElementById("googleBtnText");
+
+  btn.disabled = true;
+  txt.textContent = "Connecting to Google...";
+
+  try {
+    await loginWithGoogle();
+  } catch (err) {
+    let friendly = "Google sign-in could not be completed.";
+    const code = err.code || "";
+    if (code === "auth/popup-closed-by-user") {
+      friendly = "Sign-in popup was closed before completing.";
+    } else if (code === "auth/cancelled-popup-request") {
+      friendly = "Popup request was replaced by another attempt.";
+    } else if (code === "auth/unauthorized-domain") {
+      const currentHost = window.location.hostname;
+      const htmlMsg = `
+        <div style="width:100%;">
+          <strong>Domain Not Authorized in Firebase</strong>
+          <div style="margin-top:4px; font-size:0.78rem;">
+            Firebase requires this domain to be added to your <strong>Authorized Domains</strong> list before Google Sign-In can work:
+          </div>
+          <div style="margin:8px 0; background:#ffffff; border:1px solid #fca5a5; border-radius:6px; padding:6px 10px; display:flex; justify-content:space-between; align-items:center; gap:8px;">
+            <code style="font-size:0.75rem; color:#0f172a; word-break:break-all; font-weight:700;">${currentHost}</code>
+            <button type="button" onclick="navigator.clipboard.writeText('${currentHost}'); showToast('Domain copied to clipboard!');" class="btn btn-secondary btn-sm" style="padding:3px 8px; font-size:0.72rem; flex-shrink:0;">
+              Copy
+            </button>
+          </div>
+          <div style="font-size:0.78rem;">
+            <a href="https://console.firebase.google.com/project/smart-concrete-d2fbc/authentication/settings" target="_blank" rel="noopener noreferrer" style="color:#b91c1c; font-weight:700; text-decoration:underline;">
+              Open Firebase Console &rarr; Authorized Domains &rarr; Add Domain
+            </a>
+          </div>
+        </div>
+      `;
+      showAuthError(htmlMsg, true);
+      return;
+    } else if (err.message) {
+      friendly = err.message;
+    }
+    showAuthError(friendly);
+  } finally {
+    btn.disabled = false;
+    txt.textContent = "Continue with Google";
+  }
+}
+
+function openForgotPasswordModal() {
+  const loginEmail = document.getElementById("loginEmail").value;
+  if (loginEmail) document.getElementById("forgotEmail").value = loginEmail;
+  document.getElementById("forgotModalMsg").style.display = "none";
+  document.getElementById("forgotPasswordModal").style.display = "flex";
+}
+
+function closeForgotPasswordModal() {
+  document.getElementById("forgotPasswordModal").style.display = "none";
+}
+
+async function handleSendPasswordReset() {
+  const email = document.getElementById("forgotEmail").value.trim();
+  const msgEl = document.getElementById("forgotModalMsg");
+  const btn = document.getElementById("sendResetBtn");
+
+  if (!email) {
+    msgEl.style.display = "block";
+    msgEl.style.color = "#dc2626";
+    msgEl.textContent = "Please enter your email address.";
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = "Sending...";
+
+  try {
+    await resetPassword(email);
+    msgEl.style.display = "block";
+    msgEl.style.color = "#047857";
+    msgEl.textContent = `Password reset link sent to ${email}. Check your inbox or spam folder!`;
+    setTimeout(() => {
+      closeForgotPasswordModal();
+      switchAuthTab('login');
+      document.getElementById("authInfoBanner").style.display = "block";
+      document.getElementById("authInfoMessage").textContent = `Password reset link dispatched to ${email}.`;
+    }, 2200);
+  } catch (err) {
+    msgEl.style.display = "block";
+    msgEl.style.color = "#dc2626";
+    msgEl.textContent = err.message || "Failed to send reset email. Verify the address.";
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Send Reset Link";
+  }
+}
+
+async function handleLogout() {
+  toggleUserDropdown(false);
+  try {
+    if (currentUser?.isGuest) {
+      currentUser = null;
+      document.getElementById("appLayout").style.display = "none";
+      document.getElementById("auth-container").style.display = "flex";
+      showToast("Exited Guest Demo Mode.");
+      return;
+    }
+    await logoutUser();
+    showToast("Signed out successfully.");
+  } catch (err) {
+    console.error("Logout error:", err);
+    currentUser = null;
+    document.getElementById("appLayout").style.display = "none";
+    document.getElementById("auth-container").style.display = "flex";
+    showToast("Signed out.");
+  }
+}
+
+function continueAsGuest() {
+  currentUser = {
+    uid: "guest_demo_user",
+    displayName: "Guest Engineer",
+    email: "guest@engineering.demo",
+    isGuest: true
+  };
+  const splash = document.getElementById("auth-splash-screen");
+  if (splash) splash.style.display = "none";
+  document.getElementById("auth-container").style.display = "none";
+  document.getElementById("appLayout").style.display = "flex";
+
+  document.getElementById("userPillName").textContent = "Guest Engineer";
+  document.getElementById("dropdownUserName").textContent = "Er. Guest Engineer";
+  document.getElementById("dropdownUserEmail").textContent = "Offline Demo Mode";
+  document.getElementById("userAvatarCircle").textContent = "GE";
+
+  loadStorage();
+  renderProjectsTable();
+  runLiveCalculation();
+  showToast("Active in Guest Demo Mode. All estimation & reporting features enabled!");
+}
+
+function toggleUserDropdown(forceState) {
+  const menu = document.getElementById("userDropdownMenu");
+  if (!menu) return;
+  if (typeof forceState === "boolean") {
+    menu.classList.toggle("show", forceState);
+  } else {
+    menu.classList.toggle("show");
+  }
+}
+
+async function seedInitialCloudProjects(uid) {
+  const demoList = [
+    {
+      id: "proj_demo_1",
+      name: "Apex Horizon - Floor 2 Roof Slab",
+      location: "Plot 42, Civil Station Road, Bengaluru",
+      date: new Date().toISOString().split('T')[0],
+      structure: "Roof Slab & Beams",
+      grade: "M20",
+      volume: 10,
+      wastage: 3,
+      notes: "Specified clear cover 25mm, slump 100mm, site handling via tower crane."
+    },
+    {
+      id: "proj_demo_2",
+      name: "Metro Industrial Shed - Column Footings",
+      location: "Peenya Industrial Area, Phase 1",
+      date: new Date().toISOString().split('T')[0],
+      structure: "Isolated Column Footings",
+      grade: "M25",
+      volume: 24,
+      wastage: 4,
+      notes: "Isolated trapezoidal footings with 50mm clear cover."
+    }
+  ];
+
+  for (const p of demoList) {
+    await saveUserProjectToCloud(uid, p);
+  }
+}
+
+function checkLocalProjectsForMigration(uid, cloudProjects) {
+  try {
+    const rawLocal = localStorage.getItem(STORAGE_KEY_PROJECTS);
+    if (!rawLocal) return;
+    const localProjects = JSON.parse(rawLocal);
+    if (!Array.isArray(localProjects) || localProjects.length === 0) return;
+
+    const cloudIds = new Set(cloudProjects.map(p => p.id));
+    const unsynced = localProjects.filter(p => !cloudIds.has(p.id));
+
+    const banner = document.getElementById("migrationBanner");
+    if (unsynced.length > 0) {
+      document.getElementById("migrationBannerText").textContent =
+        `Found ${unsynced.length} unsynced local project(s) on this browser. Sync them into your Cloud Firestore account.`;
+      banner.style.display = "flex";
+      AppState.unsyncedLocal = unsynced;
+    } else {
+      banner.style.display = "none";
+    }
+  } catch (e) {
+    console.warn("Migration check error:", e);
+  }
+}
+
+async function handleMigrateLocalProjects() {
+  if (!currentUser || currentUser.isGuest) {
+    showToast("Please sign in with a Firebase account to sync records to the cloud.");
+    return;
+  }
+  const btn = document.getElementById("syncToCloudBtn");
+  btn.disabled = true;
+  btn.innerHTML = `<span class="splash-spinner" style="width:14px; height:14px; margin:0; border-width:2px; display:inline-block;"></span> Syncing...`;
+
+  try {
+    const toMigrate = AppState.unsyncedLocal || AppState.projects;
+    const res = await migrateLocalProjectsToFirestore(currentUser.uid, toMigrate);
+    showToast(`Successfully synced ${res.count} project(s) to Cloud Firestore!`);
+    document.getElementById("migrationBanner").style.display = "none";
+    localStorage.removeItem(STORAGE_KEY_PROJECTS);
+  } catch (err) {
+    console.error("Migration error:", err);
+    showToast("Failed to sync some projects. Please try again.");
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg> Sync to Cloud`;
+  }
+}
+
+function dismissMigrationBanner() {
+  document.getElementById("migrationBanner").style.display = "none";
+}
+
+// Close modals & popups on clicking backdrop
+window.onclick = function(event) {
+  if (event.target === document.getElementById("formulaModal")) closeFormulaAudit();
+  if (event.target === document.getElementById("deleteModal")) closeDeleteModal();
+  if (event.target === document.getElementById("forgotPasswordModal")) closeForgotPasswordModal();
+
+  const userWrapper = document.getElementById("userProfileWrapper");
+  if (userWrapper && !userWrapper.contains(event.target)) {
+    toggleUserDropdown(false);
+  }
+};
+
+// ============================================================================
+// EXPOSE CONTROLLERS TO WINDOW FOR INLINE HTML COMPATIBILITY
+// ============================================================================
+window.switchNav = switchNav;
+window.toggleSidebar = toggleSidebar;
+window.runLiveCalculation = runLiveCalculation;
+window.applyQuickPreset = applyQuickPreset;
+window.resetCalculatorDefaults = resetCalculatorDefaults;
+window.handleSaveSettings = handleSaveSettings;
+window.restoreDefaultSettings = restoreDefaultSettings;
+window.confirmResetAllData = confirmResetAllData;
+window.showFormulaAudit = showFormulaAudit;
+window.closeFormulaAudit = closeFormulaAudit;
+window.editProjectModal = editProjectModal;
+window.loadProjectIntoCalc = loadProjectIntoCalc;
+window.promptDeleteProject = promptDeleteProject;
+window.closeDeleteModal = closeDeleteModal;
+window.handleSaveProject = handleSaveProject;
+window.quickSaveCurrentProject = quickSaveCurrentProject;
+window.copyReportText = copyReportText;
+window.switchAuthTab = switchAuthTab;
+window.togglePassword = togglePassword;
+window.handleEmailLogin = handleEmailLogin;
+window.handleEmailSignup = handleEmailSignup;
+window.handleGoogleSignIn = handleGoogleSignIn;
+window.openForgotPasswordModal = openForgotPasswordModal;
+window.closeForgotPasswordModal = closeForgotPasswordModal;
+window.handleSendPasswordReset = handleSendPasswordReset;
+window.handleLogout = handleLogout;
+window.continueAsGuest = continueAsGuest;
+window.toggleUserDropdown = toggleUserDropdown;
+window.handleMigrateLocalProjects = handleMigrateLocalProjects;
+window.dismissMigrationBanner = dismissMigrationBanner;
+
+/**
+ * INITIALIZATION & AUTH OBSERVER
+ */
+function initializeApplication() {
+  loadStorage();
+  renderProjectsTable();
+
+  // Populate New Project default date
+  const today = new Date().toISOString().split('T')[0];
+  const dateInput = document.getElementById("projDate");
+  if (dateInput) dateInput.value = today;
+
+  // Initialize Settings Form inputs
+  const setCement = document.getElementById("setDefCementRate");
+  if (setCement) setCement.value = AppState.settings.cementRate;
+  const setSand = document.getElementById("setDefSandRate");
+  if (setSand) setSand.value = AppState.settings.sandRate;
+  const setAgg = document.getElementById("setDefAggRate");
+  if (setAgg) setAgg.value = AppState.settings.aggRate;
+  const setDry = document.getElementById("setDryFactor");
+  if (setDry) setDry.value = AppState.settings.dryFactor;
+  const setWaste = document.getElementById("setDefWastage");
+  if (setWaste) setWaste.value = AppState.settings.defaultWastage;
+  const setWater = document.getElementById("setWaterRatio");
+  if (setWater) setWater.value = AppState.settings.waterRatio;
+
+  // Run initial calculations
+  runLiveCalculation();
+
+  // Safety timer: Never leave user stuck on splash screen if network/auth hangs
+  const splashTimer = setTimeout(() => {
+    const splash = document.getElementById("auth-splash-screen");
+    if (splash && splash.style.display !== "none") {
+      splash.style.display = "none";
+      const appLayout = document.getElementById("appLayout");
+      if (!appLayout || appLayout.style.display !== "flex") {
+        const authContainer = document.getElementById("auth-container");
+        if (authContainer) authContainer.style.display = "flex";
+      }
+    }
+  }, 2200);
+
+  // Firebase Auth State Observer
+  onAuthStateChanged(auth, async (user) => {
+    clearTimeout(splashTimer);
+    const splash = document.getElementById("auth-splash-screen");
+    const authContainer = document.getElementById("auth-container");
+    const appLayout = document.getElementById("appLayout");
+
+    if (user) {
+      currentUser = user;
+      if (splash) splash.style.display = "none";
+      if (authContainer) authContainer.style.display = "none";
+      if (appLayout) appLayout.style.display = "flex";
+
+      // Update user profile pill in top bar
+      const displayName = user.displayName || user.email?.split('@')[0] || "Civil Engineer";
+      document.getElementById("userPillName").textContent = displayName;
+      document.getElementById("dropdownUserName").textContent = displayName;
+      document.getElementById("dropdownUserEmail").textContent = user.email || "";
+
+      const avatarCircle = document.getElementById("userAvatarCircle");
+      if (user.photoURL) {
+        avatarCircle.innerHTML = `<img src="${user.photoURL}" alt="${displayName}" referrerpolicy="no-referrer">`;
+      } else {
+        const initials = displayName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || "CE";
+        avatarCircle.textContent = initials;
+      }
+
+      // Real-time listener for user projects in Firestore
+      if (unsubscribeProjects) unsubscribeProjects();
+      unsubscribeProjects = subscribeToUserProjects(
+        user.uid,
+        (cloudProjects) => {
+          if (cloudProjects.length === 0 && AppState.projects.length === 0) {
+            seedInitialCloudProjects(user.uid);
+          } else {
+            AppState.projects = cloudProjects;
+            renderProjectsTable();
+            checkLocalProjectsForMigration(user.uid, cloudProjects);
+          }
+        },
+        (err) => {
+          console.warn("Firestore sync notification:", err);
+          renderProjectsTable();
+        }
+      );
+    } else {
+      if (!currentUser?.isGuest) {
+        currentUser = null;
+        if (unsubscribeProjects) {
+          unsubscribeProjects();
+          unsubscribeProjects = null;
+        }
+        if (splash) splash.style.display = "none";
+        if (appLayout) appLayout.style.display = "none";
+        if (authContainer) authContainer.style.display = "flex";
+      }
+    }
+  });
+
+  console.log("Smart Concrete Mix & Cost Estimator initialized with Firebase Authentication & Firestore Cloud sync.");
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initializeApplication);
+} else {
+  initializeApplication();
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,50 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Global Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // Per-User Concrete Projects Collection
+    match /users/{userId}/projects/{projectId} {
+      // Allow read (get, list) only if the authenticated user matches the path UID
+      allow read: if isOwner(userId);
+
+      // Allow create only if user owns the path, ID is valid, and basic schema rules pass
+      allow create: if isOwner(userId) 
+                    && isValidId(projectId)
+                    && request.resource.data.name is string
+                    && request.resource.data.name.size() > 0
+                    && request.resource.data.name.size() <= 200
+                    && request.resource.data.grade is string
+                    && request.resource.data.volume is number
+                    && request.resource.data.volume > 0;
+
+      // Allow update only if user owns the path and updates valid fields
+      allow update: if isOwner(userId)
+                    && request.resource.data.name is string
+                    && request.resource.data.name.size() > 0
+                    && request.resource.data.name.size() <= 200
+                    && request.resource.data.volume is number
+                    && request.resource.data.volume > 0;
+
+      // Allow delete only if user owns the document path
+      allow delete: if isOwner(userId);
+    }
+  }
+}

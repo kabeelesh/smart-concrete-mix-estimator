@@ -1,0 +1,74 @@
+{
+  "entities": {
+    "Project": {
+      "title": "Project",
+      "description": "Civil engineering concrete estimation project with mix parameters, cost breakdown, and wastage analysis.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the project document."
+        },
+        "name": {
+          "type": "string",
+          "description": "Project title or structure description."
+        },
+        "location": {
+          "type": "string",
+          "description": "Geographical or construction site location."
+        },
+        "date": {
+          "type": "string",
+          "description": "ISO date format of the estimate."
+        },
+        "structure": {
+          "type": "string",
+          "description": "Type of structural element (e.g. Slab, Footing, Beam)."
+        },
+        "grade": {
+          "type": "string",
+          "description": "Nominal concrete grade (M10, M15, M20, M25)."
+        },
+        "volume": {
+          "type": "number",
+          "description": "Wet concrete volume in cubic metres."
+        },
+        "wastage": {
+          "type": "number",
+          "description": "Configured site wastage percentage."
+        },
+        "notes": {
+          "type": "string",
+          "description": "Additional site specifications and engineering notes."
+        },
+        "rates": {
+          "type": "object",
+          "description": "Unit market rates for cement, sand, and aggregate."
+        },
+        "quantities": {
+          "type": "object",
+          "description": "Calculated constituent material quantities."
+        },
+        "costs": {
+          "type": "object",
+          "description": "Detailed material costs and total expenditure."
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp when the project was created."
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "ISO timestamp when the project was last modified."
+        }
+      },
+      "required": ["name", "grade", "volume"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}/projects/{projectId}": {
+      "schema": "Project",
+      "description": "Stores user-specific concrete mix estimates and quantity surveying projects."
+    }
+  }
+}
